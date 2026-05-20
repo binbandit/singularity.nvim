@@ -1,22 +1,17 @@
--- singularity.nvim — an ember-toned Neovim colorscheme.
+-- singularity.nvim — a black-hole OLED Neovim colorscheme.
 --
--- A pure-Lua descendant of oxocarbon.nvim (IBM Carbon inspired), restyled so the
--- signature accent is ember rather than magenta:
---   dark:  ember-bright #dd5500 / ember-hot #ee6611
---   light: ember-deep   #b34400 / ember     #c65300  (tuned for WCAG-AA on white)
+-- True OLED black, accretion-disk orange/yellow, warm paper foregrounds, and
+-- sparse gravitational-lensing cool accents.
 --
 -- Requiring this module has NO side effects. colors/singularity.lua calls
 -- require("singularity").load() to apply it; .setup{} configures it and
 -- .get_palette() returns the active colours (used by the lualine theme).
 
-local colorutils = require("singularity.colorutils")
-local blend_hex = colorutils.blend_hex
-
 local M = {}
 
 -- Optional configuration. The colorscheme works fully without calling setup().
 M.config = {
-  variant = "auto",        -- "auto" follows &background; or "dark" | "light" | "paper"
+  variant = "dark",        -- legacy aliases exist, but the palette is OLED-only
   italics = true,          -- italic comments / emphasis (#40)
   transparent = false,     -- clear editor + gutter + float backgrounds (#103, #41)
   dim_inactive = false,    -- dimmer background for inactive (NormalNC) windows (#37)
@@ -27,95 +22,91 @@ function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
--- Resolve which palette to use: an explicit override wins, else config.variant,
--- else follow &background. "auto" maps to dark/light from &background.
-local function resolve_variant(override)
-  local v = override or M.config.variant or "auto"
-  if v == "auto" then
-    return (vim.o.background == "light") and "light" or "dark"
-  end
-  return v
+-- Historical variant names are accepted as aliases, but Singularity is now an
+-- OLED-only theme.
+local function resolve_variant(_override)
+  return "dark"
 end
 
-local function build_palette(variant)
-  local base00 = "#161616"
-  local base06 = "#ffffff"
-  local base09 = "#78a9ff"
+local function build_palette(_variant)
+  return {
+    oled = "#000000",
+    light = "#FFF6E3",
+    parchment = "#F2E1BE",
+    paper = "#D8C7A3",
+    mist = "#BDAE92",
+    dust = "#A99B83",
+    cinder = "#8E8374",
+    smoke = "#6D665E",
 
-  -- Dark palette. base10 / base12 are the ember accents.
-  local dark = {
-    base00 = base00,
-    base01 = blend_hex(base00, base06, 0.085),
-    base02 = blend_hex(base00, base06, 0.18),
-    base03 = blend_hex(base00, base06, 0.3),
-    base04 = blend_hex(base00, base06, 0.82),
-    base05 = blend_hex(base00, base06, 0.95),
-    base06 = base06,
-    base07 = "#08bdba",
-    base08 = "#3ddbd9",
-    base09 = base09,
-    base10 = "#dd5500", -- ember-bright
-    base11 = "#33b1ff",
-    base12 = "#ee6611", -- ember-hot
-    base13 = "#42be65",
-    base14 = "#be95ff",
-    base15 = "#82cfff",
-    yellow = "#d2a106", -- icons / hipatterns accent (base16 has no yellow slot)
-    blend = "#131313",
+    bg_void = "#030201",
+    bg_mantle = "#070503",
+    bg_surface = "#0D0905",
+    bg_elevated = "#16100A",
+    bg_overlay = "#21170D",
+    bg_selection_soft = "#2F1D0B",
+    bg_selection = "#4A2E12",
+
+    flare = "#FF7A1A",
+    ember = "#FF9D3D",
+    corona = "#FFB86B",
+    gold = "#FFC857",
+    photon = "#FFD98A",
+    horizon = "#FFF0B8",
+
+    ion = "#8BDDE6",
+    gravity_blue = "#9EC7FF",
+    quasar_green = "#BFE879",
+    nova = "#F6A3FF",
+    redshift = "#FF746A",
+
+    border_subtle = "#3A230E",
+    border_visible = "#8A5A1C",
+    border_focus = "#FF7A1A",
+
+    error_bg = "#2A0F0B",
+    warning_bg = "#2B1E08",
+    info_bg = "#0A2024",
+    hint_bg = "#17220D",
+    conflict_bg = "#281226",
+
+    ansi_black = "#000000",
+    ansi_red = "#FF746A",
+    ansi_green = "#BFE879",
+    ansi_yellow = "#FFD98A",
+    ansi_blue = "#9EC7FF",
+    ansi_magenta = "#F6A3FF",
+    ansi_cyan = "#8BDDE6",
+    ansi_white = "#D8C7A3",
+    ansi_bright_black = "#8E8374",
+    ansi_bright_red = "#FF9A91",
+    ansi_bright_green = "#D2F49A",
+    ansi_bright_yellow = "#FFF0B8",
+    ansi_bright_blue = "#BDD7FF",
+    ansi_bright_magenta = "#FFC0FF",
+    ansi_bright_cyan = "#B9F1F5",
+    ansi_bright_white = "#FFF6E3",
+
+    base00 = "#000000", -- OLED / editor background
+    base01 = "#030201", -- void / cursor line and large UI surfaces
+    base02 = "#0D0905", -- surface / subtle widgets
+    base03 = "#A99B83", -- dust / comments and subdued text
+    base04 = "#D8C7A3", -- paper / default foreground
+    base05 = "#F2E1BE", -- parchment / strong foreground
+    base06 = "#FFF6E3", -- light / maximum emphasis
+    base07 = "#8BDDE6", -- ion / cyan types and info
+    base08 = "#FFC857", -- gold / functions and matches
+    base09 = "#FF7A1A", -- flare / keywords and active accents
+    base10 = "#FF746A", -- redshift / errors and deletions
+    base11 = "#9EC7FF", -- gravity blue / links and debug
+    base12 = "#FF9D3D", -- ember / properties and warm secondary syntax
+    base13 = "#BFE879", -- quasar green / success and additions
+    base14 = "#F6A3FF", -- nova / decorators, macros, rare syntax
+    base15 = "#FFF0B8", -- horizon / constants and high-energy values
+    yellow = "#FFD98A",
+    blend = "#16100A",
     none = "NONE",
   }
-
-  -- Light palette: a legible tonal counterpart (see README). Ember in the same
-  -- roles via deeper shades; cool blue/teal syntax; Material blue-grey ramp.
-  local light = {
-    base00 = base06,
-    base01 = "#eceff1",
-    base02 = "#cfd8dc",
-    base03 = "#78828a",
-    base04 = "#37474f",
-    base05 = "#546e7a",
-    base06 = "#263238",
-    base07 = "#0e7c7b",
-    base08 = "#0a8385",
-    base09 = "#1a66d6",
-    base10 = "#b34400", -- ember-deep
-    base11 = "#0f52c4",
-    base12 = "#c65300", -- ember
-    base13 = "#2a8049",
-    base14 = "#7b3fd4",
-    base15 = "#0e7693",
-    yellow = "#8a6700", -- icons / hipatterns accent (legible amber on white)
-    blend = "#f4f6f8",
-    none = "NONE",
-  }
-
-  -- Paper palette: a warm, low-glare light variant on aged-cream stock. Same
-  -- ember signature; sepia grey ramp; accents darkened to stay WCAG-AA on cream.
-  local paper = {
-    base00 = "#f4ecd8",
-    base01 = "#ebe2c9",
-    base02 = "#dcd1b4",
-    base03 = "#897e62",
-    base04 = "#433c2b",
-    base05 = "#655c45",
-    base06 = "#2a2516",
-    base07 = "#0c6f64",
-    base08 = "#0a6f69",
-    base09 = "#1f51a8",
-    base10 = "#a83e00", -- ember-deep
-    base11 = "#1a44a6",
-    base12 = "#ab4400", -- ember
-    base13 = "#3c6e1e",
-    base14 = "#6a3ab8",
-    base15 = "#0c6a80",
-    yellow = "#7a5c00",
-    blend = "#efe6d0",
-    none = "NONE",
-  }
-
-  if variant == "paper" then return paper end
-  if variant == "light" then return light end
-  return dark
 end
 
 -- Active palette for a variant (defaults to the configured/auto one). No side effects.
@@ -124,7 +115,8 @@ function M.get_palette(variant)
 end
 
 -- Apply the colorscheme. Invoked by the colors/ entries and on :colorscheme.
--- `override` forces a variant ("dark"/"light"/"paper"); nil uses config/auto.
+-- `override` is accepted for legacy colorscheme entrypoints; all variants use
+-- the OLED v2 palette.
 function M.load(override)
   local variant = resolve_variant(override)
   if vim.g.colors_name then
@@ -132,8 +124,7 @@ function M.load(override)
   end
   vim.g.colors_name = "singularity"
   vim.o.termguicolors = true
-  -- paper and light are light-background variants; keep &background in sync.
-  vim.o.background = (variant == "dark") and "dark" or "light"
+  vim.o.background = "dark"
 
   local cfg = M.config
   local c = build_palette(variant)
@@ -148,57 +139,86 @@ function M.load(override)
     vim.api.nvim_set_hl(0, group, spec)
   end
 
-  vim.g["terminal_color_0"] = c.base01
-  vim.g["terminal_color_1"] = c.base11
-  vim.g["terminal_color_2"] = c.base14
-  vim.g["terminal_color_3"] = c.base13
-  vim.g["terminal_color_4"] = c.base09
-  vim.g["terminal_color_5"] = c.base15
-  vim.g["terminal_color_6"] = c.base08
-  vim.g["terminal_color_7"] = c.base05
-  vim.g["terminal_color_8"] = c.base03
-  vim.g["terminal_color_9"] = c.base11
-  vim.g["terminal_color_10"] = c.base14
-  vim.g["terminal_color_11"] = c.base13
-  vim.g["terminal_color_12"] = c.base09
-  vim.g["terminal_color_13"] = c.base15
-  vim.g["terminal_color_14"] = c.base07
-  vim.g["terminal_color_15"] = c.base06
-  hl("ColorColumn", {fg = c.none, bg = c.base01})
-  hl("Cursor", {fg = c.base00, bg = c.base04})
-  hl("CursorLine", {fg = c.none, bg = c.base01})
-  hl("CursorColumn", {fg = c.none, bg = c.base01})
-  hl("CursorLineNr", {fg = c.base04, bg = c.none})
-  hl("QuickFixLine", {fg = c.none, bg = c.base01})
-  hl("Error", {fg = c.base10, bg = c.base01})
-  hl("LineNr", {fg = c.base03, bg = c.base00})
-  hl("NonText", {fg = c.base02, bg = c.none})
-  hl("Normal", {fg = c.base04, bg = c.base00})
-  hl("Pmenu", {fg = c.base04, bg = c.base01})
-  hl("PmenuSbar", {fg = c.base04, bg = c.base01})
-  hl("PmenuSel", {fg = c.base08, bg = c.base02})
-  hl("PmenuThumb", {fg = c.base08, bg = c.base02})
-  hl("SpecialKey", {fg = c.base03, bg = c.none})
-  hl("Visual", {fg = c.none, bg = c.base02})
-  hl("VisualNOS", {fg = c.none, bg = c.base02})
-  hl("TooLong", {fg = c.none, bg = c.base02})
-  hl("Debug", {fg = c.base13, bg = c.none})
-  hl("Macro", {fg = c.base07, bg = c.none})
-  hl("MatchParen", {fg = c.none, bg = c.base02, underline = true})
+  vim.g["terminal_color_0"] = c.ansi_black or c.base01
+  vim.g["terminal_color_1"] = c.ansi_red or c.base10
+  vim.g["terminal_color_2"] = c.ansi_green or c.base13
+  vim.g["terminal_color_3"] = c.ansi_yellow or c.yellow
+  vim.g["terminal_color_4"] = c.ansi_blue or c.base09
+  vim.g["terminal_color_5"] = c.ansi_magenta or c.base14
+  vim.g["terminal_color_6"] = c.ansi_cyan or c.base07
+  vim.g["terminal_color_7"] = c.ansi_white or c.base04
+  vim.g["terminal_color_8"] = c.ansi_bright_black or c.base03
+  vim.g["terminal_color_9"] = c.ansi_bright_red or c.base10
+  vim.g["terminal_color_10"] = c.ansi_bright_green or c.base13
+  vim.g["terminal_color_11"] = c.ansi_bright_yellow or c.base15
+  vim.g["terminal_color_12"] = c.ansi_bright_blue or c.base11
+  vim.g["terminal_color_13"] = c.ansi_bright_magenta or c.base14
+  vim.g["terminal_color_14"] = c.ansi_bright_cyan or c.base07
+  vim.g["terminal_color_15"] = c.ansi_bright_white or c.base06
+  hl("ColorColumn", {fg = c.none, bg = c.bg_void or c.base01})
+  hl("Cursor", {fg = c.oled or c.base00, bg = c.light or c.base06})
+  hl("CursorLine", {fg = c.none, bg = c.bg_void or c.base01})
+  hl("CursorColumn", {fg = c.none, bg = c.bg_void or c.base01})
+  hl("CursorLineNr", {fg = c.photon or c.base08, bg = c.none, bold = true})
+  hl("QuickFixLine", {fg = c.none, bg = c.bg_selection_soft or c.base02})
+  hl("Error", {fg = c.redshift or c.base10, bg = c.error_bg or c.base01})
+  hl("LineNr", {fg = c.cinder or c.base03, bg = c.base00})
+  hl("NonText", {fg = c.border_subtle or c.base02, bg = c.none})
+  hl("Normal", {fg = c.paper or c.base04, bg = c.base00})
+  hl("MsgArea", {fg = c.paper or c.base04, bg = c.base00})
+  hl("MsgSeparator", {fg = c.border_subtle or c.base01, bg = c.base00})
+  hl("Pmenu", {fg = c.paper or c.base04, bg = c.bg_elevated or c.base01})
+  hl("PmenuSbar", {fg = c.paper or c.base04, bg = c.bg_elevated or c.base01})
+  hl("PmenuSel", {fg = c.light or c.base06, bg = c.bg_selection or c.base02})
+  hl("PmenuThumb", {fg = c.border_visible or c.base08, bg = c.border_visible or c.base02})
+  hl("PmenuKind", {fg = c.mist or c.base03, bg = c.bg_elevated or c.base01})
+  hl("PmenuKindSel", {fg = c.photon or c.base08, bg = c.bg_selection or c.base02})
+  hl("PmenuExtra", {fg = c.mist or c.base03, bg = c.bg_elevated or c.base01})
+  hl("PmenuExtraSel", {fg = c.light or c.base06, bg = c.bg_selection or c.base02})
+  hl("PmenuMatch", {fg = c.photon or c.base08, bg = c.bg_elevated or c.base01, bold = true})
+  hl("PmenuMatchSel", {fg = c.horizon or c.base15, bg = c.bg_selection or c.base02, bold = true})
+  hl("SpecialKey", {fg = c.border_subtle or c.base03, bg = c.none})
+  hl("Whitespace", {fg = c.border_subtle or c.base02, bg = c.none})
+  hl("Visual", {fg = c.light or c.base06, bg = c.bg_selection or c.base02})
+  hl("VisualNOS", {fg = c.light or c.base06, bg = c.bg_selection or c.base02})
+  hl("TooLong", {fg = c.none, bg = c.bg_selection_soft or c.base02})
+  hl("Debug", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("Macro", {fg = c.nova or c.base14, bg = c.none})
+  hl("MatchParen", {fg = c.none, bg = c.bg_selection_soft or c.base02, underline = true})
   hl("Bold", {fg = c.none, bg = c.none, bold = true})
   hl("Italic", {fg = c.none, bg = c.none, italic = true})
   hl("Underlined", {fg = c.none, bg = c.none, underline = true})
-  hl("DiagnosticWarn", {fg = c.base14, bg = c.none})
-  hl("DiagnosticError", {fg = c.base10, bg = c.none})
-  hl("DiagnosticInfo", {fg = c.base09, bg = c.none})
-  hl("DiagnosticHint", {fg = c.base04, bg = c.none})
-  hl("DiagnosticUnderlineWarn", {fg = c.base14, bg = c.none, undercurl = true})
-  hl("DiagnosticUnderlineError", {fg = c.base10, bg = c.none, undercurl = true})
-  hl("DiagnosticUnderlineInfo", {fg = c.base04, bg = c.none, undercurl = true})
-  hl("DiagnosticUnderlineHint", {fg = c.base04, bg = c.none, undercurl = true})
-  hl("HealthError", {fg = c.base10, bg = c.none})
-  hl("HealthWarning", {fg = c.base14, bg = c.none})
-  hl("HealthSuccess", {fg = c.base13, bg = c.none})
+  hl("DiagnosticWarn", {fg = c.gold or c.base14, bg = c.none})
+  hl("DiagnosticError", {fg = c.redshift or c.base10, bg = c.none})
+  hl("DiagnosticInfo", {fg = c.ion or c.base09, bg = c.none})
+  hl("DiagnosticHint", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("DiagnosticUnderlineWarn", {sp = c.gold or c.base14, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineError", {sp = c.redshift or c.base10, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineInfo", {sp = c.ion or c.base07, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineHint", {sp = c.quasar_green or c.base13, bg = c.none, undercurl = true})
+  hl("DiagnosticVirtualTextWarn", {fg = c.gold or c.base14, bg = c.warning_bg or c.none})
+  hl("DiagnosticVirtualTextError", {fg = c.redshift or c.base10, bg = c.error_bg or c.none})
+  hl("DiagnosticVirtualTextInfo", {fg = c.ion or c.base07, bg = c.info_bg or c.none})
+  hl("DiagnosticVirtualTextHint", {fg = c.quasar_green or c.base13, bg = c.hint_bg or c.none})
+  hl("DiagnosticVirtualLinesWarn", {fg = c.gold or c.base08, bg = c.warning_bg or c.none})
+  hl("DiagnosticVirtualLinesError", {fg = c.redshift or c.base10, bg = c.error_bg or c.none})
+  hl("DiagnosticVirtualLinesInfo", {fg = c.ion or c.base07, bg = c.info_bg or c.none})
+  hl("DiagnosticVirtualLinesHint", {fg = c.quasar_green or c.base13, bg = c.hint_bg or c.none})
+  hl("DiagnosticSignWarn", {fg = c.gold or c.base08, bg = c.none})
+  hl("DiagnosticSignError", {fg = c.redshift or c.base10, bg = c.none})
+  hl("DiagnosticSignInfo", {fg = c.ion or c.base07, bg = c.none})
+  hl("DiagnosticSignHint", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("DiagnosticFloatingWarn", {fg = c.gold or c.base08, bg = c.bg_elevated or c.blend})
+  hl("DiagnosticFloatingError", {fg = c.redshift or c.base10, bg = c.bg_elevated or c.blend})
+  hl("DiagnosticFloatingInfo", {fg = c.ion or c.base07, bg = c.bg_elevated or c.blend})
+  hl("DiagnosticFloatingHint", {fg = c.quasar_green or c.base13, bg = c.bg_elevated or c.blend})
+  hl("DiagnosticOk", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("DiagnosticSignOk", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("DiagnosticFloatingOk", {fg = c.quasar_green or c.base13, bg = c.bg_elevated or c.blend})
+  hl("DiagnosticVirtualTextOk", {fg = c.quasar_green or c.base13, bg = c.hint_bg or c.none})
+  hl("HealthError", {fg = c.redshift or c.base10, bg = c.none})
+  hl("HealthWarning", {fg = c.gold or c.base08, bg = c.none})
+  hl("HealthSuccess", {fg = c.quasar_green or c.base13, bg = c.none})
   hl("@comment", {link = "Comment"})
   hl("@text.literal.commodity", {fg = c.base13, bg = c.none})
   hl("@number", {fg = c.base09, bg = c.none})
@@ -208,20 +228,19 @@ function M.load(override)
   hl("@number.status", {fg = c.base12, bg = c.none})
   hl("@number.quantity", {fg = c.base11, bg = c.none})
   hl("@number.quantity.negative", {fg = c.base10, bg = c.none})
-  hl("LspCodeLens", {fg = c.none, bg = c.base03})
-  hl("LspReferenceText", {fg = c.none, bg = c.base03})
-  hl("LspReferenceRead", {fg = c.none, bg = c.base03})
-  hl("LspReferenceWrite", {fg = c.none, bg = c.base03})
-  hl("LspSignatureActiveParameter", {fg = c.base08, bg = c.none})
+  hl("LspCodeLens", {fg = c.dust or c.base03, bg = c.none})
+  hl("LspReferenceText", {fg = c.none, bg = c.bg_selection_soft or c.base02})
+  hl("LspReferenceRead", {fg = c.none, bg = c.bg_selection_soft or c.base02})
+  hl("LspReferenceWrite", {fg = c.none, bg = c.bg_selection_soft or c.base02})
+  hl("LspSignatureActiveParameter", {fg = c.photon or c.base08, bg = c.none})
   hl("@lsp.type.class", {link = "Structure"})
   hl("@lsp.type.decorator", {link = "Decorator"})
   hl("@lsp.type.decorator.markdown", {link = "Structure"})
   hl("@lsp.type.function", {link = "@function"})
   hl("@lsp.type.macro", {link = "Macro"})
-  hl("@lsp.type.method", {link = "@function"})
+  hl("@lsp.type.method", {link = "@method"})
   hl("@lsp.type.struct", {link = "Structure"})
   hl("@lsp.type.type", {link = "Type"})
-  hl("@lsp.type.typeParameter", {link = "Typedef"})
   hl("@lsp.type.selfParameter", {link = "@variable.builtin"})
   hl("@lsp.type.builtinConstant", {link = "@constant.builtin"})
   hl("@lsp.type.magicFunction", {link = "@function.builtin"})
@@ -234,6 +253,8 @@ function M.load(override)
   hl("@lsp.type.formatSpecifier", {link = "@punctuation.special"})
   hl("@lsp.type.keyword", {link = "@keyword"})
   hl("@lsp.type.namespace", {link = "@namespace"})
+  hl("@lsp.type.interface", {link = "@interface"})
+  hl("@lsp.type.typeParameter", {link = "@type.parameter"})
   hl("@lsp.type.number", {link = "@number"})
   hl("@lsp.type.operator", {link = "@operator"})
   hl("@lsp.type.parameter", {link = "@parameter"})
@@ -264,74 +285,85 @@ function M.load(override)
   hl("@lsp.typemod.function.readonly", {link = "@method"})
   hl("@lsp.typemod.variable.defaultLibrary", {link = "@variable.builtin"})
   hl("@lsp.typemod.variable.injected", {link = "@variable"})
-  hl("Folded", {fg = c.base02, bg = c.base01})
-  hl("FoldColumn", {fg = c.base01, bg = c.base00})
-  hl("SignColumn", {fg = c.base01, bg = c.base00})
-  hl("Directory", {fg = c.base08, bg = c.none})
-  hl("EndOfBuffer", {fg = c.base01, bg = c.none})
-  hl("ErrorMsg", {fg = c.base10, bg = c.none})
-  hl("ModeMsg", {fg = c.base04, bg = c.none})
-  hl("MoreMsg", {fg = c.base08, bg = c.none})
-  hl("Question", {fg = c.base04, bg = c.none})
-  hl("Substitute", {fg = c.base01, bg = c.base08})
-  hl("WarningMsg", {fg = c.base14, bg = c.none})
-  hl("WildMenu", {fg = c.base08, bg = c.base01})
-  hl("helpHyperTextJump", {fg = c.base08, bg = c.none})
-  hl("helpSpecial", {fg = c.base09, bg = c.none})
-  hl("helpHeadline", {fg = c.base10, bg = c.none})
-  hl("helpHeader", {fg = c.base15, bg = c.none})
-  hl("DiffAdded", {fg = c.base07, bg = c.none})
-  hl("DiffChanged", {fg = c.base09, bg = c.none})
-  hl("DiffRemoved", {fg = c.base10, bg = c.none})
-  hl("DiffAdd", {bg = "#122f2f", fg = c.none})
-  hl("DiffChange", {bg = "#222a39", fg = c.none})
-  hl("DiffText", {bg = "#2f3f5c", fg = c.none})
-  hl("DiffDelete", {bg = "#361c28", fg = c.none})
-  hl("IncSearch", {fg = c.base06, bg = c.base10})
-  hl("Search", {fg = c.base01, bg = c.base08})
-  hl("TabLine", {link = "StatusLineNC"})
-  hl("TabLineFill", {link = "TabLine"})
-  hl("TabLineSel", {link = "StatusLine"})
-  hl("Title", {fg = c.base04, bg = c.none})
-  hl("VertSplit", {fg = c.base01, bg = c.base00})
-  hl("WinSeparator", {fg = c.base01, bg = c.base00})
-  hl("Boolean", {fg = c.base09, bg = c.none})
-  hl("Character", {fg = c.base14, bg = c.none})
-  hl("Comment", {fg = c.base03, bg = c.none, italic = true})
+  hl("Folded", {fg = c.mist or c.base04, bg = c.bg_surface or c.base01})
+  hl("FoldColumn", {fg = c.cinder or c.base03, bg = c.base00})
+  hl("SignColumn", {fg = c.cinder or c.base03, bg = c.base00})
+  hl("Directory", {fg = c.gold or c.base08, bg = c.none})
+  hl("EndOfBuffer", {fg = c.bg_void or c.base01, bg = c.none})
+  hl("ErrorMsg", {fg = c.redshift or c.base10, bg = c.none})
+  hl("ModeMsg", {fg = c.paper or c.base04, bg = c.none})
+  hl("MoreMsg", {fg = c.photon or c.base08, bg = c.none})
+  hl("Question", {fg = c.paper or c.base04, bg = c.none})
+  hl("Substitute", {fg = c.oled or c.base00, bg = c.flare or c.base09})
+  hl("WarningMsg", {fg = c.gold or c.base14, bg = c.none})
+  hl("WildMenu", {fg = c.light or c.base06, bg = c.bg_selection or c.base01})
+  hl("helpHyperTextJump", {fg = c.gravity_blue or c.base11, bg = c.none, underline = true})
+  hl("helpSpecial", {fg = c.photon or c.base08, bg = c.none})
+  hl("helpHeadline", {fg = c.gold or c.base08, bg = c.none})
+  hl("helpHeader", {fg = c.horizon or c.base15, bg = c.none})
+  hl("DiffAdded", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("DiffChanged", {fg = c.gold or c.base08, bg = c.none})
+  hl("DiffRemoved", {fg = c.redshift or c.base10, bg = c.none})
+  hl("DiffAdd", {bg = c.hint_bg or "#17220D", fg = c.none})
+  hl("DiffChange", {bg = c.warning_bg or "#2B1E08", fg = c.none})
+  hl("DiffText", {bg = c.bg_selection or "#4A2E12", fg = c.none})
+  hl("DiffDelete", {bg = c.error_bg or "#2A0F0B", fg = c.none})
+  hl("diffAdded", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("diffChanged", {fg = c.gold or c.base08, bg = c.none})
+  hl("diffRemoved", {fg = c.redshift or c.base10, bg = c.none})
+  hl("diffDeleted", {fg = c.redshift or c.base10, bg = c.none})
+  hl("diffLine", {fg = c.photon or c.base08, bg = c.bg_elevated or c.base02})
+  hl("diffFile", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("diffNewFile", {fg = c.quasar_green or c.base13, bg = c.none})
+  hl("diffOldFile", {fg = c.redshift or c.base10, bg = c.none})
+  hl("IncSearch", {fg = c.oled or c.base00, bg = c.photon or c.base08, bold = true})
+  hl("Search", {fg = c.oled or c.base00, bg = c.photon or c.base08})
+  hl("TabLine", {fg = c.dust or c.base03, bg = c.bg_mantle or c.base01})
+  hl("TabLineFill", {fg = c.border_subtle or c.base01, bg = c.bg_mantle or c.base01})
+  hl("TabLineSel", {fg = c.light or c.base06, bg = c.oled or c.base00, underline = true, sp = c.border_focus or c.base09})
+  hl("Title", {fg = c.gold or c.base08, bg = c.none, bold = true})
+  hl("VertSplit", {fg = c.border_subtle or c.base01, bg = c.base00})
+  hl("WinSeparator", {fg = c.border_subtle or c.base01, bg = c.base00})
+  hl("WinBar", {fg = c.parchment or c.base05, bg = c.bg_void or c.base01})
+  hl("WinBarNC", {fg = c.dust or c.base03, bg = c.bg_void or c.base01})
+  hl("Boolean", {fg = c.horizon or c.base15, bg = c.none})
+  hl("Character", {fg = c.corona or c.base14, bg = c.none})
+  hl("Comment", {fg = c.dust or c.base03, bg = c.none, italic = true})
   hl("Conceal", {fg = c.none, bg = c.none})
-  hl("Conditional", {fg = c.base09, bg = c.none})
-  hl("Constant", {fg = c.base04, bg = c.none})
-  hl("Decorator", {fg = c.base12, bg = c.none})
-  hl("Define", {fg = c.base09, bg = c.none})
-  hl("Delimeter", {fg = c.base06, bg = c.none})
-  hl("Exception", {fg = c.base09, bg = c.none})
+  hl("Conditional", {fg = c.flare or c.base09, bg = c.none})
+  hl("Constant", {fg = c.horizon or c.base15, bg = c.none})
+  hl("Decorator", {fg = c.nova or c.base14, bg = c.none})
+  hl("Define", {fg = c.flare or c.base09, bg = c.none})
+  hl("Delimiter", {fg = c.cinder or c.base03, bg = c.none})
+  hl("Delimeter", {link = "Delimiter"})
+  hl("Exception", {fg = c.flare or c.base09, bg = c.none})
   hl("Float", {link = "Number"})
-  hl("Function", {fg = c.base08, bg = c.none})
-  hl("Identifier", {fg = c.base04, bg = c.none})
-  hl("Include", {fg = c.base09, bg = c.none})
-  hl("Keyword", {fg = c.base09, bg = c.none})
-  hl("Label", {fg = c.base09, bg = c.none})
-  hl("Number", {fg = c.base15, bg = c.none})
-  hl("Operator", {fg = c.base09, bg = c.none})
-  hl("PreProc", {fg = c.base09, bg = c.none})
-  hl("Repeat", {fg = c.base09, bg = c.none})
-  hl("Special", {fg = c.base04, bg = c.none})
-  hl("SpecialChar", {fg = c.base04, bg = c.none})
-  hl("SpecialComment", {fg = c.base08, bg = c.none})
-  hl("Statement", {fg = c.base09, bg = c.none})
-  hl("StorageClass", {fg = c.base09, bg = c.none})
-  hl("String", {fg = c.base14, bg = c.none})
-  hl("Structure", {fg = c.base09, bg = c.none})
-  hl("Tag", {fg = c.base04, bg = c.none})
-  hl("Todo", {fg = c.base13, bg = c.none})
-  hl("Type", {fg = c.base09, bg = c.none})
-  hl("Typedef", {fg = c.base09, bg = c.none})
-  hl("markdownBlockquote", {fg = c.base08, bg = c.none})
-  hl("markdownBold", {link = "Bold"})
-  hl("markdownItalic", {link = "Italic"})
-  hl("markdownBoldItalic", {fg = c.none, bg = c.none, bold = true, italic = true})
+  hl("Function", {fg = c.gold or c.base08, bg = c.none})
+  hl("Identifier", {fg = c.paper or c.base04, bg = c.none})
+  hl("Include", {fg = c.mist or c.base03, bg = c.none})
+  hl("Keyword", {fg = c.flare or c.base09, bg = c.none})
+  hl("Label", {fg = c.flare or c.base09, bg = c.none})
+  hl("Number", {fg = c.horizon or c.base15, bg = c.none})
+  hl("Operator", {fg = c.mist or c.base03, bg = c.none})
+  hl("PreProc", {fg = c.flare or c.base09, bg = c.none})
+  hl("Repeat", {fg = c.flare or c.base09, bg = c.none})
+  hl("Special", {fg = c.nova or c.base14, bg = c.none})
+  hl("SpecialChar", {fg = c.nova or c.base14, bg = c.none})
+  hl("SpecialComment", {fg = c.mist or c.base03, bg = c.none, italic = true})
+  hl("Statement", {fg = c.flare or c.base09, bg = c.none})
+  hl("StorageClass", {fg = c.flare or c.base09, bg = c.none})
+  hl("String", {fg = c.corona or c.base14, bg = c.none})
+  hl("Structure", {fg = c.ion or c.base07, bg = c.none})
+  hl("Tag", {fg = c.ion or c.base07, bg = c.none})
+  hl("Todo", {fg = c.oled or c.base00, bg = c.photon or c.base13, bold = true})
+  hl("Type", {fg = c.ion or c.base07, bg = c.none})
+  hl("Typedef", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("markdownBlockquote", {fg = c.dust or c.base03, bg = c.none})
+  hl("markdownBold", {fg = c.light or c.base06, bg = c.none, bold = true})
+  hl("markdownItalic", {fg = c.paper or c.base04, bg = c.none, italic = true})
+  hl("markdownBoldItalic", {fg = c.light or c.base06, bg = c.none, bold = true, italic = true})
   hl("markdownRule", {link = "Comment"})
-  hl("markdownH1", {fg = c.base10, bg = c.none})
+  hl("markdownH1", {fg = c.gold or c.base08, bg = c.none, bold = true})
   hl("markdownH2", {link = "markdownH1"})
   hl("markdownH3", {link = "markdownH1"})
   hl("markdownH4", {link = "markdownH1"})
@@ -339,20 +371,19 @@ function M.load(override)
   hl("markdownH6", {link = "markdownH1"})
   hl("markdownHeadingDelimiter", {link = "markdownH1"})
   hl("markdownHeadingRule", {link = "markdownH1"})
-  hl("markdownUrl", {fg = c.base14, bg = c.none, underline = true})
-  hl("markdownCode", {link = "String"})
+  hl("markdownUrl", {fg = c.gravity_blue or c.base11, bg = c.none, underline = true})
+  hl("markdownCode", {fg = c.corona or c.base12, bg = c.bg_elevated or c.base01})
   hl("markdownCodeBlock", {link = "markdownCode"})
   hl("markdownCodeDelimiter", {link = "markdownCode"})
-  hl("markdownUrl", {link = "String"})
-  hl("markdownListMarker", {fg = c.base08, bg = c.none})
-  hl("markdownOrderedListMarker", {fg = c.base08, bg = c.none})
+  hl("markdownListMarker", {fg = c.gold or c.base08, bg = c.none})
+  hl("markdownOrderedListMarker", {fg = c.gold or c.base08, bg = c.none})
   hl("@markup", {link = "@none"})
   hl("@markup.environment", {link = "Macro"})
   hl("@markup.environment.name", {link = "Type"})
-  hl("@markup.emphasis", {italic = true})
-  hl("@markup.italic", {italic = true})
+  hl("@markup.emphasis", {fg = c.paper or c.base04, italic = true})
+  hl("@markup.italic", {fg = c.paper or c.base04, italic = true})
   hl("@markup.strikethrough", {strikethrough = true})
-  hl("@markup.strong", {bold = true})
+  hl("@markup.strong", {fg = c.light or c.base06, bold = true})
   hl("@markup.underline", {underline = true})
   hl("@markup.heading", {link = "Title"})
   hl("@markup.heading.marker", {link = "markdownHeadingDelimiter"})
@@ -371,7 +402,7 @@ function M.load(override)
   hl("@markup.link.title", {link = "Title"})
   hl("@markup.link.url", {link = "markdownUrl"})
   hl("@markup.link.destination", {link = "markdownUrl"})
-  hl("@markup.link.description", {fg = c.blend, underline = true, italic = true})
+  hl("@markup.link.description", {fg = c.gravity_blue or c.base11, underline = true, italic = true})
   hl("@markup.list", {link = "markdownListMarker"})
   hl("@markup.list.bullet", {link = "markdownListMarker"})
   hl("@markup.list.checked", {link = "markdownListMarker"})
@@ -380,7 +411,7 @@ function M.load(override)
   hl("@markup.list.unchecked", {link = "markdownListMarker"})
   hl("@markup.math", {link = "Special"})
   hl("@markup.raw", {link = "String"})
-  hl("@markup.raw.markdown_inline", {link = "String"})
+  hl("@markup.raw.markdown_inline", {link = "markdownCode"})
   hl("@markup.quote", {link = "markdownBlockquote"})
   hl("@markup.literal", {link = "markdownCode"})
   hl("@markup.code.block", {link = "markdownCodeBlock"})
@@ -393,152 +424,192 @@ function M.load(override)
   hl("asciidocQuotedMonospaced", {link = "markdownBlockquote"})
   hl("asciidocURL", {link = "markdownUrl"})
   hl("@comment", {link = "Comment"})
-  hl("@error", {fg = c.base11, bg = c.none})
+  hl("@error", {fg = c.redshift or c.base10, bg = c.none})
   hl("@operator", {link = "Operator"})
-  hl("@punctuation.delimiter", {fg = c.base08, bg = c.none})
-  hl("@punctuation.bracket", {fg = c.base08, bg = c.none})
-  hl("@punctuation.special", {fg = c.base08, bg = c.none})
+  hl("@punctuation.delimiter", {fg = c.cinder or c.base03, bg = c.none})
+  hl("@punctuation.bracket", {fg = c.mist or c.base03, bg = c.none})
+  hl("@punctuation.special", {fg = c.nova or c.base14, bg = c.none})
   hl("@string", {link = "String"})
-  hl("@string.regex", {fg = c.base07, bg = c.none})
-  hl("@string.escape", {fg = c.base15, bg = c.none})
+  hl("@string.documentation", {fg = c.mist or c.base03, bg = c.none, italic = true})
+  hl("@string.regex", {fg = c.gold or c.base08, bg = c.none})
+  hl("@string.regexp", {link = "@string.regex"})
+  hl("@string.escape", {fg = c.nova or c.base14, bg = c.none})
+  hl("@string.special", {fg = c.nova or c.base14, bg = c.none})
+  hl("@string.special.symbol", {fg = c.horizon or c.base15, bg = c.none})
+  hl("@string.special.url", {fg = c.gravity_blue or c.base11, bg = c.none, underline = true})
   hl("@character", {link = "Character"})
   hl("@boolean", {link = "Boolean"})
   hl("@number", {link = "Number"})
   hl("@float", {link = "Float"})
-  hl("@function", {fg = c.base12, bg = c.none, bold = true})
-  hl("@function.builtin", {fg = c.base12, bg = c.none})
-  hl("@function.macro", {fg = c.base07, bg = c.none})
-  hl("@method", {fg = c.base07, bg = c.none})
-  hl("@constructor", {fg = c.base09, bg = c.none})
-  hl("@parameter", {fg = c.base04, bg = c.none})
-  hl("@keyword", {fg = c.base09, bg = c.none})
-  hl("@keyword.function", {fg = c.base08, bg = c.none})
-  hl("@keyword.operator", {fg = c.base08, bg = c.none})
-  hl("@conditional", {fg = c.base09, bg = c.none})
-  hl("@repeat", {fg = c.base09, bg = c.none})
-  hl("@label", {fg = c.base15, bg = c.none})
-  hl("@include", {fg = c.base09, bg = c.none})
-  hl("@exception", {fg = c.base15, bg = c.none})
+  hl("@function", {fg = c.gold or c.base08, bg = c.none})
+  hl("@function.builtin", {fg = c.gold or c.base08, bg = c.none})
+  hl("@function.macro", {fg = c.nova or c.base14, bg = c.none})
+  hl("@method", {fg = c.photon or c.base08, bg = c.none})
+  hl("@constructor", {fg = c.horizon or c.base15, bg = c.none, bold = true})
+  hl("@parameter", {fg = c.mist or c.base03, bg = c.none})
+  hl("@keyword", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.function", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.operator", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.coroutine", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.conditional", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.repeat", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.return", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.exception", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.import", {fg = c.mist or c.base03, bg = c.none})
+  hl("@keyword.modifier", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.directive", {fg = c.flare or c.base09, bg = c.none})
+  hl("@keyword.directive.define", {fg = c.flare or c.base09, bg = c.none})
+  hl("@conditional", {fg = c.flare or c.base09, bg = c.none})
+  hl("@repeat", {fg = c.flare or c.base09, bg = c.none})
+  hl("@label", {fg = c.flare or c.base09, bg = c.none})
+  hl("@include", {fg = c.mist or c.base03, bg = c.none})
+  hl("@exception", {fg = c.flare or c.base09, bg = c.none})
   hl("@type", {link = "Type"})
   hl("@type.builtin", {link = "Type"})
-  hl("@attribute", {fg = c.base15, bg = c.none})
-  hl("@field", {fg = c.base04, bg = c.none})
-  hl("@property", {fg = c.base10, bg = c.none})
-  hl("@variable", {fg = c.base04, bg = c.none})
-  hl("@variable.builtin", {fg = c.base04, bg = c.none})
-  hl("@constant", {fg = c.base14, bg = c.none})
-  hl("@constant.builtin", {fg = c.base07, bg = c.none})
-  hl("@constant.macro", {fg = c.base07, bg = c.none})
-  hl("@namespace", {fg = c.base07, bg = c.none})
-  hl("@symbol", {fg = c.base15, bg = c.none, bold = true})
-  hl("@text", {fg = c.base04, bg = c.none})
+  hl("@type.definition", {fg = c.ion or c.base07, bg = c.none})
+  hl("@type.parameter", {fg = c.ion or c.base07, bg = c.none})
+  hl("@type.qualifier", {fg = c.flare or c.base09, bg = c.none})
+  hl("@interface", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("@module", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("@module.builtin", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("@namespace", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("@attribute", {fg = c.nova or c.base14, bg = c.none})
+  hl("@field", {fg = c.ember or c.base12, bg = c.none})
+  hl("@property", {fg = c.ember or c.base12, bg = c.none})
+  hl("@variable", {fg = c.paper or c.base04, bg = c.none})
+  hl("@variable.builtin", {fg = c.parchment or c.base05, bg = c.none})
+  hl("@variable.parameter", {fg = c.mist or c.base03, bg = c.none})
+  hl("@variable.parameter.builtin", {fg = c.mist or c.base03, bg = c.none})
+  hl("@variable.member", {fg = c.ember or c.base12, bg = c.none})
+  hl("@constant", {fg = c.horizon or c.base15, bg = c.none})
+  hl("@constant.builtin", {fg = c.horizon or c.base15, bg = c.none})
+  hl("@constant.macro", {fg = c.nova or c.base14, bg = c.none})
+  hl("@symbol", {fg = c.horizon or c.base15, bg = c.none, bold = true})
+  hl("@text", {fg = c.paper or c.base04, bg = c.none})
   hl("@text.strong", {fg = c.none, bg = c.none})
-  hl("@text.emphasis", {fg = c.base10, bg = c.none, bold = true})
-  hl("@text.underline", {fg = c.base10, bg = c.none, underline = true})
-  hl("@text.strike", {fg = c.base10, bg = c.none, strikethrough = true})
-  hl("@text.title", {fg = c.base10, bg = c.none})
-  hl("@text.literal", {fg = c.base04, bg = c.none})
-  hl("@text.uri", {fg = c.base14, bg = c.none, underline = true})
-  hl("@tag", {fg = c.base09, bg = c.none})
-  hl("@tag.attribute", {fg = c.base15, bg = c.none})
-  hl("@tag.delimiter", {fg = c.base15, bg = c.none})
+  hl("@text.emphasis", {fg = c.paper or c.base04, bg = c.none, italic = true})
+  hl("@text.underline", {fg = c.gravity_blue or c.base11, bg = c.none, underline = true})
+  hl("@text.strike", {fg = c.dust or c.base03, bg = c.none, strikethrough = true})
+  hl("@text.title", {fg = c.gold or c.base08, bg = c.none, bold = true})
+  hl("@text.literal", {fg = c.corona or c.base14, bg = c.none})
+  hl("@text.uri", {fg = c.gravity_blue or c.base11, bg = c.none, underline = true})
+  hl("@tag", {fg = c.ion or c.base07, bg = c.none})
+  hl("@tag.attribute", {fg = c.ember or c.base12, bg = c.none})
+  hl("@tag.delimiter", {fg = c.cinder or c.base03, bg = c.none})
   hl("@tag.builtin.tsx", {link = "@tag.tsx"})
-  hl("@reference", {fg = c.base04, bg = c.none})
-  hl("NvimInternalError", {fg = c.base00, bg = c.base08})
-  hl("NormalFloat", {fg = c.base05, bg = c.blend})
-  hl("FloatBorder", {fg = c.blend, bg = c.blend})
-  hl("NormalNC", {fg = c.base04, bg = c.base00})
-  hl("TermCursor", {fg = c.base00, bg = c.base04})
-  hl("TermCursorNC", {fg = c.base00, bg = c.base04})
-  hl("StatusLine", {fg = c.base04, bg = c.base00})
-  hl("StatusLineNC", {fg = c.base04, bg = c.base01})
-  hl("StatusReplace", {fg = c.base00, bg = c.base08})
-  hl("StatusInsert", {fg = c.base00, bg = c.base12})
-  hl("StatusVisual", {fg = c.base00, bg = c.base14})
-  hl("StatusTerminal", {fg = c.base00, bg = c.base11})
-  hl("StatusNormal", {fg = c.base00, bg = c.base15})
-  hl("StatusCommand", {fg = c.base00, bg = c.base13})
-  hl("StatusLineDiagnosticWarn", {fg = c.base14, bg = c.base00, bold = true})
-  hl("StatusLineDiagnosticError", {fg = c.base10, bg = c.base00, bold = true})
-  hl("TelescopeBorder", {fg = c.blend, bg = c.blend})
-  hl("TelescopePromptBorder", {fg = c.base02, bg = c.base02})
-  hl("TelescopePromptNormal", {fg = c.base05, bg = c.base02})
-  hl("TelescopePromptPrefix", {fg = c.base08, bg = c.base02})
-  hl("TelescopeNormal", {fg = c.none, bg = c.blend})
-  hl("TelescopePreviewTitle", {fg = c.base02, bg = c.base12})
-  hl("TelescopePromptTitle", {fg = c.base02, bg = c.base11})
-  hl("TelescopeResultsTitle", {fg = c.blend, bg = c.blend})
-  hl("TelescopeSelection", {fg = c.none, bg = c.base02})
-  hl("TelescopePreviewLine", {fg = c.none, bg = c.base01})
-  hl("TelescopeMatching", {fg = c.base08, bg = c.none, bold = true, italic = true})
-  hl("NotifyERRORBorder", {fg = c.base08, bg = c.none})
-  hl("NotifyWARNBorder", {fg = c.base14, bg = c.none})
-  hl("NotifyINFOBorder", {fg = c.base05, bg = c.none})
-  hl("NotifyDEBUGBorder", {fg = c.base13, bg = c.none})
-  hl("NotifyTRACEBorder", {fg = c.base13, bg = c.none})
-  hl("NotifyERRORIcon", {fg = c.base08, bg = c.none})
-  hl("NotifyWARNIcon", {fg = c.base14, bg = c.none})
-  hl("NotifyINFOIcon", {fg = c.base05, bg = c.none})
-  hl("NotifyDEBUGIcon", {fg = c.base13, bg = c.none})
-  hl("NotifyTRACEIcon", {fg = c.base13, bg = c.none})
-  hl("NotifyERRORTitle", {fg = c.base08, bg = c.none})
-  hl("NotifyWARNTitle", {fg = c.base14, bg = c.none})
-  hl("NotifyINFOTitle", {fg = c.base05, bg = c.none})
-  hl("NotifyDEBUGTitle", {fg = c.base13, bg = c.none})
-  hl("NotifyTRACETitle", {fg = c.base13, bg = c.none})
-  hl("CmpItemAbbr", {fg = "#adadad", bg = c.none})
-  hl("CmpItemAbbrMatch", {fg = c.base05, bg = c.none, bold = true})
-  hl("CmpItemAbbrMatchFuzzy", {fg = c.base04, bg = c.none, bold = true})
-  hl("CmpItemMenu", {fg = c.base04, bg = c.none, italic = true})
-  hl("CmpItemKindInterface", {fg = c.base08})
-  hl("CmpItemKindColor", {fg = c.base08})
-  hl("CmpItemKindTypeParameter", {fg = c.base08})
-  hl("CmpItemKindText", {fg = c.base09})
-  hl("CmpItemKindEnum", {fg = c.base09})
-  hl("CmpItemKindKeyword", {fg = c.base09})
-  hl("CmpItemKindConstant", {fg = c.base10})
-  hl("CmpItemKindConstructor", {fg = c.base10})
-  hl("CmpItemKindReference", {fg = c.base10})
-  hl("CmpItemKindFunction", {fg = c.base11})
-  hl("CmpItemKindStruct", {fg = c.base11})
-  hl("CmpItemKindClass", {fg = c.base11})
-  hl("CmpItemKindModule", {fg = c.base11})
-  hl("CmpItemKindOperator", {fg = c.base11})
-  hl("CmpItemKindField", {fg = c.base12})
-  hl("CmpItemKindProperty", {fg = c.base12})
-  hl("CmpItemKindEvent", {fg = c.base12})
-  hl("CmpItemKindUnit", {fg = c.base13})
-  hl("CmpItemKindSnippet", {fg = c.base13})
-  hl("CmpItemKindFolder", {fg = c.base13})
-  hl("CmpItemKindVariable", {fg = c.base14})
-  hl("CmpItemKindFile", {fg = c.base14})
-  hl("CmpItemKindMethod", {fg = c.base15})
-  hl("CmpItemKindValue", {fg = c.base15})
-  hl("CmpItemKindEnumMember", {fg = c.base15})
-  hl("NvimTreeImageFile", {fg = c.base12, bg = c.none})
-  hl("NvimTreeFolderIcon", {fg = c.base12, bg = c.none})
-  hl("NvimTreeWinSeparator", {fg = c.base00, bg = c.base00})
-  hl("NvimTreeFolderName", {fg = c.base09, bg = c.none})
-  hl("NvimTreeIndentMarker", {fg = c.base02, bg = c.none})
-  hl("NvimTreeEmptyFolderName", {fg = c.base15, bg = c.none})
-  hl("NvimTreeOpenedFolderName", {fg = c.base15, bg = c.none})
-  hl("NvimTreeNormal", {fg = c.base04, bg = c.base00})
-  hl("NeogitBranch", {fg = c.base10, bg = c.none})
-  hl("NeogitRemote", {fg = c.base09, bg = c.none})
-  hl("NeogitHunkHeader", {fg = c.base04, bg = c.base02})
-  hl("NeogitHunkHeaderHighlight", {fg = c.base04, bg = c.base03})
+  hl("@reference", {fg = c.paper or c.base04, bg = c.none})
+  hl("NvimInternalError", {fg = c.oled or c.base00, bg = c.redshift or c.base10})
+  hl("NormalFloat", {fg = c.paper or c.base04, bg = c.bg_elevated or c.blend})
+  hl("FloatBorder", {fg = c.border_visible or c.base08, bg = c.bg_elevated or c.blend})
+  hl("FloatTitle", {fg = c.photon or c.base08, bg = c.bg_elevated or c.blend, bold = true})
+  hl("FloatFooter", {fg = c.mist or c.base03, bg = c.bg_elevated or c.blend})
+  hl("FloatShadow", {fg = c.none, bg = c.bg_overlay or c.base02})
+  hl("FloatShadowThrough", {fg = c.none, bg = c.bg_surface or c.base02})
+  hl("NormalNC", {fg = c.paper or c.base04, bg = c.base00})
+  hl("TermCursor", {fg = c.oled or c.base00, bg = c.light or c.base06})
+  hl("TermCursorNC", {fg = c.oled or c.base00, bg = c.light or c.base06})
+  hl("StatusLine", {fg = c.light or c.base06, bg = c.bg_elevated or c.base00})
+  hl("StatusLineNC", {fg = c.dust or c.base03, bg = c.bg_void or c.base01})
+  hl("StatusReplace", {fg = c.oled or c.base00, bg = c.redshift or c.base10})
+  hl("StatusInsert", {fg = c.oled or c.base00, bg = c.quasar_green or c.base13})
+  hl("StatusVisual", {fg = c.oled or c.base00, bg = c.flare or c.base09})
+  hl("StatusTerminal", {fg = c.oled or c.base00, bg = c.corona or c.base12})
+  hl("StatusNormal", {fg = c.oled or c.base00, bg = c.photon or c.base15})
+  hl("StatusCommand", {fg = c.oled or c.base00, bg = c.ion or c.base07})
+  hl("StatusLineDiagnosticWarn", {fg = c.gold or c.base08, bg = c.bg_elevated or c.base00, bold = true})
+  hl("StatusLineDiagnosticError", {fg = c.redshift or c.base10, bg = c.bg_elevated or c.base00, bold = true})
+  hl("TelescopeBorder", {fg = c.border_visible or c.base08, bg = c.bg_elevated or c.blend})
+  hl("TelescopePromptBorder", {fg = c.border_visible or c.base08, bg = c.bg_elevated or c.base02})
+  hl("TelescopePromptNormal", {fg = c.paper or c.base04, bg = c.bg_elevated or c.base02})
+  hl("TelescopePromptPrefix", {fg = c.photon or c.base08, bg = c.bg_elevated or c.base02})
+  hl("TelescopeNormal", {fg = c.paper or c.base04, bg = c.bg_elevated or c.blend})
+  hl("TelescopePreviewTitle", {fg = c.oled or c.base00, bg = c.ember or c.base12})
+  hl("TelescopePromptTitle", {fg = c.oled or c.base00, bg = c.gravity_blue or c.base11})
+  hl("TelescopeResultsTitle", {fg = c.bg_elevated or c.blend, bg = c.bg_elevated or c.blend})
+  hl("TelescopeSelection", {fg = c.light or c.base06, bg = c.bg_selection or c.base02})
+  hl("TelescopePreviewLine", {fg = c.none, bg = c.bg_selection_soft or c.base01})
+  hl("TelescopeMatching", {fg = c.photon or c.base08, bg = c.none, bold = true})
+  hl("NotifyERRORBorder", {fg = c.redshift or c.base10, bg = c.none})
+  hl("NotifyWARNBorder", {fg = c.gold or c.base08, bg = c.none})
+  hl("NotifyINFOBorder", {fg = c.ion or c.base07, bg = c.none})
+  hl("NotifyDEBUGBorder", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("NotifyTRACEBorder", {fg = c.nova or c.base14, bg = c.none})
+  hl("NotifyERRORIcon", {fg = c.redshift or c.base10, bg = c.none})
+  hl("NotifyWARNIcon", {fg = c.gold or c.base08, bg = c.none})
+  hl("NotifyINFOIcon", {fg = c.ion or c.base07, bg = c.none})
+  hl("NotifyDEBUGIcon", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("NotifyTRACEIcon", {fg = c.nova or c.base14, bg = c.none})
+  hl("NotifyERRORTitle", {fg = c.redshift or c.base10, bg = c.none})
+  hl("NotifyWARNTitle", {fg = c.gold or c.base08, bg = c.none})
+  hl("NotifyINFOTitle", {fg = c.ion or c.base07, bg = c.none})
+  hl("NotifyDEBUGTitle", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("NotifyTRACETitle", {fg = c.nova or c.base14, bg = c.none})
+  hl("CmpItemAbbr", {fg = c.paper or c.base04, bg = c.none})
+  hl("CmpItemAbbrMatch", {fg = c.photon or c.base08, bg = c.none, bold = true})
+  hl("CmpItemAbbrMatchFuzzy", {fg = c.photon or c.base08, bg = c.none, bold = true})
+  hl("CmpItemMenu", {fg = c.mist or c.base03, bg = c.none, italic = true})
+  hl("CmpItemKindInterface", {fg = c.gravity_blue or c.base11})
+  hl("CmpItemKindColor", {fg = c.corona or c.base12})
+  hl("CmpItemKindTypeParameter", {fg = c.ion or c.base07})
+  hl("CmpItemKindText", {fg = c.mist or c.base03})
+  hl("CmpItemKindEnum", {fg = c.photon or c.base08})
+  hl("CmpItemKindKeyword", {fg = c.flare or c.base09})
+  hl("CmpItemKindConstant", {fg = c.horizon or c.base15})
+  hl("CmpItemKindConstructor", {fg = c.horizon or c.base15})
+  hl("CmpItemKindReference", {fg = c.mist or c.base03})
+  hl("CmpItemKindFunction", {fg = c.gold or c.base08})
+  hl("CmpItemKindStruct", {fg = c.ion or c.base07})
+  hl("CmpItemKindClass", {fg = c.ion or c.base07})
+  hl("CmpItemKindModule", {fg = c.gravity_blue or c.base11})
+  hl("CmpItemKindOperator", {fg = c.mist or c.base03})
+  hl("CmpItemKindField", {fg = c.ember or c.base12})
+  hl("CmpItemKindProperty", {fg = c.ember or c.base12})
+  hl("CmpItemKindEvent", {fg = c.nova or c.base14})
+  hl("CmpItemKindUnit", {fg = c.horizon or c.base15})
+  hl("CmpItemKindSnippet", {fg = c.nova or c.base14})
+  hl("CmpItemKindFolder", {fg = c.gold or c.base08})
+  hl("CmpItemKindVariable", {fg = c.paper or c.base04})
+  hl("CmpItemKindFile", {fg = c.paper or c.base04})
+  hl("CmpItemKindMethod", {fg = c.photon or c.base08})
+  hl("CmpItemKindValue", {fg = c.horizon or c.base15})
+  hl("CmpItemKindEnumMember", {fg = c.horizon or c.base15})
+  hl("CmpItemKindTypeParameter", {fg = c.ion or c.base07})
+  hl("NvimTreeImageFile", {fg = c.corona or c.base12, bg = c.none})
+  hl("NvimTreeFolderIcon", {fg = c.gold or c.base08, bg = c.none})
+  hl("NvimTreeWinSeparator", {fg = c.border_subtle or c.base01, bg = c.bg_void or c.base00})
+  hl("NvimTreeFolderName", {fg = c.gold or c.base08, bg = c.none})
+  hl("NvimTreeIndentMarker", {fg = c.border_subtle or c.base02, bg = c.none})
+  hl("NvimTreeEmptyFolderName", {fg = c.mist or c.base03, bg = c.none})
+  hl("NvimTreeOpenedFolderName", {fg = c.photon or c.base08, bg = c.none})
+  hl("NvimTreeNormal", {fg = c.mist or c.base04, bg = c.bg_void or c.base00})
+  hl("NeogitBranch", {fg = c.flare or c.base09, bg = c.none})
+  hl("NeogitRemote", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("NeogitHunkHeader", {fg = c.paper or c.base04, bg = c.bg_surface or c.base02})
+  hl("NeogitHunkHeaderHighlight", {fg = c.light or c.base06, bg = c.bg_selection_soft or c.base03})
   hl("GitSignsCurrentLineBlame", {link = "Comment"})
-  hl("HydraRed", {fg = c.base12, bg = c.none})
-  hl("HydraBlue", {fg = c.base09, bg = c.none})
-  hl("HydraAmaranth", {fg = c.base10, bg = c.none})
-  hl("HydraTeal", {fg = c.base08, bg = c.none})
-  hl("HydraHint", {fg = c.none, bg = c.blend})
+  hl("GitSignsAdd", {link = "DiffAdded"})
+  hl("GitSignsAddNr", {link = "DiffAdded"})
+  hl("GitSignsAddLn", {bg = c.hint_bg or c.base02})
+  hl("GitSignsChange", {link = "DiffChanged"})
+  hl("GitSignsChangeNr", {link = "DiffChanged"})
+  hl("GitSignsChangeLn", {bg = c.warning_bg or c.base02})
+  hl("GitSignsDelete", {link = "DiffRemoved"})
+  hl("GitSignsDeleteNr", {link = "DiffRemoved"})
+  hl("GitSignsDeleteLn", {bg = c.error_bg or c.base02})
+  hl("GitSignsTopdelete", {link = "DiffRemoved"})
+  hl("GitSignsChangedelete", {fg = c.gold or c.base08, bg = c.none})
+  hl("GitSignsUntracked", {link = "DiffAdded"})
+  hl("HydraRed", {fg = c.redshift or c.base10, bg = c.none})
+  hl("HydraBlue", {fg = c.gravity_blue or c.base11, bg = c.none})
+  hl("HydraAmaranth", {fg = c.nova or c.base14, bg = c.none})
+  hl("HydraTeal", {fg = c.ion or c.base07, bg = c.none})
+  hl("HydraHint", {fg = c.none, bg = c.bg_elevated or c.blend})
   hl("alpha1", {fg = c.base03, bg = c.none})
   hl("alpha2", {fg = c.base04, bg = c.none})
   hl("alpha3", {fg = c.base03, bg = c.none})
-  hl("CodeBlock", {fg = c.none, bg = c.base01})
-  hl("BufferLineDiagnostic", {fg = c.base10, bg = c.none, bold = true})
-  hl("BufferLineDiagnosticVisible", {fg = c.base10, bg = c.none, bold = true})
+  hl("CodeBlock", {fg = c.none, bg = c.bg_elevated or c.base01})
+  hl("BufferLineDiagnostic", {fg = c.redshift or c.base10, bg = c.none, bold = true})
+  hl("BufferLineDiagnosticVisible", {fg = c.redshift or c.base10, bg = c.none, bold = true})
   hl("htmlH1", {link = "markdownH1"})
   hl("mkdRule", {link = "markdownRule"})
   hl("mkdListItem", {link = "markdownListMarker"})
@@ -553,11 +624,11 @@ function M.load(override)
   hl("VimwikiList", {link = "markdownListMarker"})
   hl("VimwikiLink", {link = "markdownUrl"})
   hl("VimwikiCode", {link = "markdownCode"})
-  hl("FlashLabel", {fg = c.base05, bg = c.base00, bold = true})
+  hl("FlashLabel", {fg = c.light or c.base06, bg = c.flare or c.base09, bold = true})
 
   -- ── Issue fixes ───────────────────────────────────────
-  hl("Folded", { fg = c.base04, bg = c.base01 })       -- #86 fg was base02 (too dark)
-  hl("@text.underline", { underline = true })          -- #101 underline, not ember text
+  hl("Folded", { fg = c.mist or c.base04, bg = c.bg_surface or c.base01 }) -- #86 fg was base02 (too dark)
+  hl("@text.underline", { underline = true })          -- #101 underline, not accent text
   hl("CurSearch", { link = "IncSearch" })              -- #91 current search match
   hl("Added", { link = "DiffAdded" })                  -- #101 builtin diff base groups
   hl("Changed", { link = "DiffChanged" })
@@ -568,7 +639,14 @@ function M.load(override)
 
   -- Per-level markdown headings (#80). Set colored_headings = false to disable.
   if cfg.colored_headings then
-    local levels = { c.base10, c.base11, c.base08, c.base13, c.base14, c.base15 }
+    local levels = {
+      c.gold or c.base08,
+      c.photon or c.base08,
+      c.flare or c.base09,
+      c.ion or c.base07,
+      c.nova or c.base14,
+      c.quasar_green or c.base13,
+    }
     for i, colour in ipairs(levels) do
       hl("markdownH" .. i, { fg = colour, bold = true })
       hl("@markup.heading." .. i .. ".markdown", { link = "markdownH" .. i })
@@ -577,7 +655,7 @@ function M.load(override)
 
   -- ── mini.nvim — https://github.com/nvim-mini/mini.nvim ──────────────────
   -- Group names validated against upstream mini.hues; links keep them in sync
-  -- with dark/light, transparency and config automatically.
+  -- with the OLED palette, transparency and config automatically.
   -- mini.statusline
   hl("MiniStatuslineModeNormal", { link = "StatusNormal" })
   hl("MiniStatuslineModeInsert", { link = "StatusInsert" })
@@ -624,17 +702,17 @@ function M.load(override)
   hl("MiniFilesDirectory", { link = "Directory" })
   hl("MiniFilesFile", { link = "Normal" })
   hl("MiniFilesTitle", { link = "Title" })
-  hl("MiniFilesTitleFocused", { fg = c.base10, bold = true })
+  hl("MiniFilesTitleFocused", { fg = c.photon or c.base08, bold = true })
   -- mini.icons (base16 has no yellow; uses c.yellow)
-  hl("MiniIconsAzure", { fg = c.base11 })
-  hl("MiniIconsBlue", { fg = c.base09 })
-  hl("MiniIconsCyan", { fg = c.base07 })
-  hl("MiniIconsGreen", { fg = c.base13 })
-  hl("MiniIconsGrey", { fg = c.base05 })
-  hl("MiniIconsOrange", { fg = c.base12 })
-  hl("MiniIconsPurple", { fg = c.base14 })
-  hl("MiniIconsRed", { fg = c.base10 })
-  hl("MiniIconsYellow", { fg = c.yellow })
+  hl("MiniIconsAzure", { fg = c.gravity_blue or c.base11 })
+  hl("MiniIconsBlue", { fg = c.gravity_blue or c.base11 })
+  hl("MiniIconsCyan", { fg = c.ion or c.base07 })
+  hl("MiniIconsGreen", { fg = c.quasar_green or c.base13 })
+  hl("MiniIconsGrey", { fg = c.dust or c.base03 })
+  hl("MiniIconsOrange", { fg = c.ember or c.base12 })
+  hl("MiniIconsPurple", { fg = c.nova or c.base14 })
+  hl("MiniIconsRed", { fg = c.redshift or c.base10 })
+  hl("MiniIconsYellow", { fg = c.photon or c.yellow })
   -- mini.diff
   hl("MiniDiffSignAdd", { link = "DiffAdded" })
   hl("MiniDiffSignChange", { link = "DiffChanged" })
@@ -694,13 +772,13 @@ function M.load(override)
   hl("MiniCursorword", { underline = true })
   hl("MiniCursorwordCurrent", { link = "MiniCursorword" })
   -- mini.indentscope
-  hl("MiniIndentscopeSymbol", { fg = c.base03 })
+  hl("MiniIndentscopeSymbol", { fg = c.border_subtle or c.base02 })
   hl("MiniIndentscopeSymbolOff", { link = "MiniIndentscopeSymbol" })
   -- mini.map
   hl("MiniMapNormal", { link = "NormalFloat" })
   hl("MiniMapSymbolCount", { fg = c.base05 })
   hl("MiniMapSymbolLine", { fg = c.base11 })
-  hl("MiniMapSymbolView", { fg = c.base03 })
+  hl("MiniMapSymbolView", { fg = c.border_subtle or c.base02 })
   -- mini.snippets
   hl("MiniSnippetsCurrent", { sp = c.base08, underline = true })
   hl("MiniSnippetsCurrentReplace", { sp = c.base10, underline = true })
@@ -718,7 +796,7 @@ function M.load(override)
   -- mini.operators / mini.surround / mini.trailspace / mini.animate
   hl("MiniOperatorsExchangeFrom", { link = "Visual" })
   hl("MiniSurround", { link = "IncSearch" })
-  hl("MiniTrailspace", { bg = c.base10 })
+  hl("MiniTrailspace", { bg = c.redshift or c.base10 })
   hl("MiniAnimateCursor", { link = "Cursor" })
   hl("MiniAnimateNormalFloat", { link = "NormalFloat" })
   -- mini.cmdline (peek window)
@@ -731,7 +809,7 @@ function M.load(override)
 
   -- ── Popular third-party plugins ─────────────────────────────────────────
   -- Group names validated against upstream sources (plugin repos / catppuccin).
-  -- Everything links to the theme's semantic groups so it tracks dark/light,
+  -- Everything links to the theme's semantic groups so it tracks the OLED palette,
   -- transparency and config automatically.
 
   -- LSP-kind icons -> treesitter captures (nvim-navic, trouble symbols)
@@ -748,7 +826,7 @@ function M.load(override)
     hl("NavicIcons" .. kind, { link = target })
     hl("TroubleIcon" .. kind, { link = target })
   end
-  hl("NavicText", { fg = c.base04 })
+  hl("NavicText", { fg = c.paper or c.base04 })
   hl("NavicSeparator", { link = "Comment" })
 
   -- completion kinds (CmpItemKind* defined above); mirror for blink.cmp / noice
@@ -761,50 +839,50 @@ function M.load(override)
     hl("BlinkCmpKind" .. kind, { link = "CmpItemKind" .. kind })
     hl("NoiceCompletionItemKind" .. kind, { link = "CmpItemKind" .. kind })
   end
-  hl("BlinkCmpKindCopilot", { fg = c.base08 })
-  hl("NoiceCompletionItemKindDefault", { fg = c.base05 })
+  hl("BlinkCmpKindCopilot", { fg = c.quasar_green or c.base13 })
+  hl("NoiceCompletionItemKindDefault", { fg = c.parchment or c.base05 })
 
   -- which-key.nvim (v3)
-  hl("WhichKey", { fg = c.base08 })
-  hl("WhichKeyGroup", { fg = c.base12 })
-  hl("WhichKeyDesc", { fg = c.base04 })
+  hl("WhichKey", { fg = c.gold or c.base08 })
+  hl("WhichKeyGroup", { fg = c.ember or c.base12 })
+  hl("WhichKeyDesc", { fg = c.paper or c.base04 })
   hl("WhichKeySeparator", { link = "Comment" })
-  hl("WhichKeyValue", { fg = c.base05 })
+  hl("WhichKeyValue", { fg = c.parchment or c.base05 })
   hl("WhichKeyNormal", { link = "NormalFloat" })
   hl("WhichKeyBorder", { link = "FloatBorder" })
   hl("WhichKeyTitle", { link = "Title" })
-  hl("WhichKeyIcon", { fg = c.base11 })
+  hl("WhichKeyIcon", { fg = c.gravity_blue or c.base11 })
   for _, col in ipairs({ "Azure", "Blue", "Cyan", "Green", "Grey", "Orange", "Purple", "Red", "Yellow" }) do
     hl("WhichKeyIcon" .. col, { link = "MiniIcons" .. col })
   end
 
   -- neo-tree.nvim
-  hl("NeoTreeNormal", { link = "Normal" })
-  hl("NeoTreeNormalNC", { link = "NormalNC" })
+  hl("NeoTreeNormal", { fg = c.mist or c.base03, bg = c.bg_void or c.base01 })
+  hl("NeoTreeNormalNC", { fg = c.dust or c.base03, bg = c.bg_void or c.base01 })
   hl("NeoTreeDirectoryName", { link = "Directory" })
   hl("NeoTreeDirectoryIcon", { link = "Directory" })
-  hl("NeoTreeRootName", { fg = c.base10, bold = true })
-  hl("NeoTreeFileNameOpened", { fg = c.base15 })
-  hl("NeoTreeSymbolicLinkTarget", { fg = c.base14 })
-  hl("NeoTreeIndentMarker", { fg = c.base02 })
-  hl("NeoTreeExpander", { fg = c.base04 })
-  hl("NeoTreeModified", { fg = c.base12 })
+  hl("NeoTreeRootName", { fg = c.parchment or c.base05, bold = true })
+  hl("NeoTreeFileNameOpened", { fg = c.light or c.base06 })
+  hl("NeoTreeSymbolicLinkTarget", { fg = c.gravity_blue or c.base11 })
+  hl("NeoTreeIndentMarker", { fg = c.border_subtle or c.base02 })
+  hl("NeoTreeExpander", { fg = c.mist or c.base03 })
+  hl("NeoTreeModified", { fg = c.gold or c.base08 })
   hl("NeoTreeGitAdded", { link = "DiffAdded" })
-  hl("NeoTreeGitConflict", { fg = c.base10 })
+  hl("NeoTreeGitConflict", { fg = c.nova or c.base14 })
   hl("NeoTreeGitDeleted", { link = "DiffRemoved" })
   hl("NeoTreeGitIgnored", { link = "Comment" })
   hl("NeoTreeGitModified", { link = "DiffChanged" })
-  hl("NeoTreeGitUnstaged", { fg = c.base12 })
-  hl("NeoTreeGitUntracked", { fg = c.base14 })
+  hl("NeoTreeGitUnstaged", { fg = c.gold or c.base08 })
+  hl("NeoTreeGitUntracked", { fg = c.quasar_green or c.base13 })
   hl("NeoTreeGitStaged", { link = "DiffAdded" })
   hl("NeoTreeFloatBorder", { link = "FloatBorder" })
   hl("NeoTreeFloatTitle", { link = "Title" })
-  hl("NeoTreeTitleBar", { fg = c.base00, bg = c.base10 })
+  hl("NeoTreeTitleBar", { fg = c.oled or c.base00, bg = c.flare or c.base09 })
   hl("NeoTreeDimText", { link = "Comment" })
-  hl("NeoTreeFilterTerm", { fg = c.base08 })
-  hl("NeoTreeTabActive", { fg = c.base10, bold = true })
+  hl("NeoTreeFilterTerm", { fg = c.photon or c.base08 })
+  hl("NeoTreeTabActive", { fg = c.light or c.base06, bg = c.oled or c.base00, bold = true })
   hl("NeoTreeTabInactive", { link = "Comment" })
-  hl("NeoTreeTabSeparatorActive", { fg = c.base10 })
+  hl("NeoTreeTabSeparatorActive", { fg = c.border_focus or c.base09 })
   hl("NeoTreeTabSeparatorInactive", { link = "WinSeparator" })
   hl("NeoTreeVertSplit", { link = "WinSeparator" })
   hl("NeoTreeWinSeparator", { link = "WinSeparator" })
@@ -812,33 +890,33 @@ function M.load(override)
 
   -- noice.nvim
   hl("NoiceCmdline", { link = "NormalFloat" })
-  hl("NoiceCmdlineIcon", { fg = c.base12 })
-  hl("NoiceCmdlineIconSearch", { fg = c.base15 })
+  hl("NoiceCmdlineIcon", { fg = c.ember or c.base12 })
+  hl("NoiceCmdlineIconSearch", { fg = c.photon or c.base08 })
   hl("NoiceCmdlinePopup", { link = "NormalFloat" })
   hl("NoiceCmdlinePopupBorder", { link = "FloatBorder" })
-  hl("NoiceCmdlinePopupBorderSearch", { fg = c.base15 })
+  hl("NoiceCmdlinePopupBorderSearch", { fg = c.border_focus or c.base09 })
   hl("NoiceCmdlinePopupTitle", { link = "Title" })
-  hl("NoiceCmdlinePrompt", { fg = c.base12 })
+  hl("NoiceCmdlinePrompt", { fg = c.photon or c.base08 })
   hl("NoiceConfirm", { link = "NormalFloat" })
   hl("NoiceConfirmBorder", { link = "FloatBorder" })
   hl("NoicePopup", { link = "NormalFloat" })
   hl("NoicePopupBorder", { link = "FloatBorder" })
   hl("NoicePopupmenu", { link = "Pmenu" })
   hl("NoicePopupmenuBorder", { link = "FloatBorder" })
-  hl("NoicePopupmenuMatch", { fg = c.base08, bold = true })
+  hl("NoicePopupmenuMatch", { fg = c.photon or c.base08, bold = true })
   hl("NoicePopupmenuSelected", { link = "PmenuSel" })
-  hl("NoiceMini", { fg = c.base05 })
+  hl("NoiceMini", { fg = c.parchment or c.base05 })
   hl("NoiceScrollbar", { link = "PmenuSbar" })
   hl("NoiceScrollbarThumb", { link = "PmenuThumb" })
   hl("NoiceSplit", { link = "NormalFloat" })
   hl("NoiceSplitBorder", { link = "FloatBorder" })
-  hl("NoiceVirtualText", { fg = c.base14 })
+  hl("NoiceVirtualText", { fg = c.nova or c.base14 })
   hl("NoiceCursor", { link = "Cursor" })
-  hl("NoiceFormatProgressDone", { fg = c.base00, bg = c.base13 })
-  hl("NoiceFormatProgressTodo", { fg = c.base00, bg = c.base02 })
-  hl("NoiceLspProgressClient", { fg = c.base11 })
-  hl("NoiceLspProgressSpinner", { fg = c.base12 })
-  hl("NoiceLspProgressTitle", { fg = c.base04 })
+  hl("NoiceFormatProgressDone", { fg = c.oled or c.base00, bg = c.quasar_green or c.base13 })
+  hl("NoiceFormatProgressTodo", { fg = c.dust or c.base03, bg = c.bg_surface or c.base02 })
+  hl("NoiceLspProgressClient", { fg = c.gravity_blue or c.base11 })
+  hl("NoiceLspProgressSpinner", { fg = c.ember or c.base12 })
+  hl("NoiceLspProgressTitle", { fg = c.paper or c.base04 })
   hl("NoiceFormatLevelDebug", { link = "Comment" })
   hl("NoiceFormatLevelTrace", { link = "Comment" })
   hl("NoiceFormatLevelOff", { link = "Comment" })
@@ -848,24 +926,24 @@ function M.load(override)
 
   -- lazy.nvim
   hl("LazyNormal", { link = "NormalFloat" })
-  hl("LazyH1", { fg = c.base00, bg = c.base10, bold = true })
+  hl("LazyH1", { fg = c.oled or c.base00, bg = c.redshift or c.base10, bold = true })
   hl("LazyH2", { link = "Title" })
-  hl("LazyButton", { fg = c.base04, bg = c.base01 })
-  hl("LazyButtonActive", { fg = c.base00, bg = c.base10 })
+  hl("LazyButton", { fg = c.paper or c.base04, bg = c.bg_surface or c.base01 })
+  hl("LazyButtonActive", { fg = c.oled or c.base00, bg = c.flare or c.base09 })
   hl("LazyComment", { link = "Comment" })
   hl("LazyDimmed", { link = "Comment" })
-  hl("LazyProp", { fg = c.base05 })
-  hl("LazyValue", { fg = c.base14 })
+  hl("LazyProp", { fg = c.parchment or c.base05 })
+  hl("LazyValue", { fg = c.nova or c.base14 })
   hl("LazyDir", { link = "Directory" })
-  hl("LazyUrl", { fg = c.base14, underline = true })
-  hl("LazyCommit", { fg = c.base13 })
-  hl("LazyCommitIssue", { fg = c.base15 })
-  hl("LazyCommitType", { fg = c.base11 })
-  hl("LazyCommitScope", { fg = c.base12 })
-  hl("LazyProgressDone", { fg = c.base10 })
-  hl("LazyProgressTodo", { fg = c.base02 })
-  hl("LazySpecial", { fg = c.base08 })
-  hl("LazyLocal", { fg = c.base13 })
+  hl("LazyUrl", { fg = c.gravity_blue or c.base11, underline = true })
+  hl("LazyCommit", { fg = c.quasar_green or c.base13 })
+  hl("LazyCommitIssue", { fg = c.horizon or c.base15 })
+  hl("LazyCommitType", { fg = c.gravity_blue or c.base11 })
+  hl("LazyCommitScope", { fg = c.ember or c.base12 })
+  hl("LazyProgressDone", { fg = c.flare or c.base09 })
+  hl("LazyProgressTodo", { fg = c.border_subtle or c.base02 })
+  hl("LazySpecial", { fg = c.gold or c.base08 })
+  hl("LazyLocal", { fg = c.quasar_green or c.base13 })
   hl("LazyNoCond", { link = "DiagnosticWarn" })
   hl("LazyError", { link = "DiagnosticError" })
   hl("LazyWarning", { link = "DiagnosticWarn" })
@@ -882,37 +960,37 @@ function M.load(override)
   hl("LazyReasonRequire", { fg = c.base05 })
 
   -- mason.nvim
-  hl("MasonHeader", { fg = c.base00, bg = c.base10, bold = true })
-  hl("MasonHeaderSecondary", { fg = c.base00, bg = c.base12, bold = true })
-  hl("MasonHeading", { fg = c.base04, bold = true })
-  hl("MasonHighlight", { fg = c.base08 })
-  hl("MasonHighlightBlock", { fg = c.base00, bg = c.base08 })
-  hl("MasonHighlightBlockBold", { fg = c.base00, bg = c.base08, bold = true })
-  hl("MasonHighlightSecondary", { fg = c.base15 })
-  hl("MasonHighlightBlockSecondary", { fg = c.base00, bg = c.base15 })
-  hl("MasonHighlightBlockBoldSecondary", { fg = c.base00, bg = c.base15, bold = true })
+  hl("MasonHeader", { fg = c.oled or c.base00, bg = c.flare or c.base09, bold = true })
+  hl("MasonHeaderSecondary", { fg = c.oled or c.base00, bg = c.ember or c.base12, bold = true })
+  hl("MasonHeading", { fg = c.paper or c.base04, bold = true })
+  hl("MasonHighlight", { fg = c.gold or c.base08 })
+  hl("MasonHighlightBlock", { fg = c.oled or c.base00, bg = c.gold or c.base08 })
+  hl("MasonHighlightBlockBold", { fg = c.oled or c.base00, bg = c.gold or c.base08, bold = true })
+  hl("MasonHighlightSecondary", { fg = c.horizon or c.base15 })
+  hl("MasonHighlightBlockSecondary", { fg = c.oled or c.base00, bg = c.horizon or c.base15 })
+  hl("MasonHighlightBlockBoldSecondary", { fg = c.oled or c.base00, bg = c.horizon or c.base15, bold = true })
   hl("MasonMuted", { link = "Comment" })
-  hl("MasonMutedBlock", { fg = c.base04, bg = c.base01 })
-  hl("MasonMutedBlockBold", { fg = c.base04, bg = c.base01, bold = true })
+  hl("MasonMutedBlock", { fg = c.paper or c.base04, bg = c.bg_surface or c.base01 })
+  hl("MasonMutedBlockBold", { fg = c.paper or c.base04, bg = c.bg_surface or c.base01, bold = true })
   hl("MasonError", { link = "DiagnosticError" })
 
   -- trouble.nvim (v3)
   hl("TroubleNormal", { link = "NormalFloat" })
   hl("TroubleNormalNC", { link = "NormalFloat" })
-  hl("TroubleText", { fg = c.base04 })
+  hl("TroubleText", { fg = c.paper or c.base04 })
   hl("TroublePreview", { link = "Visual" })
-  hl("TroubleFilename", { fg = c.base15 })
-  hl("TroubleBasename", { fg = c.base15 })
+  hl("TroubleFilename", { fg = c.horizon or c.base15 })
+  hl("TroubleBasename", { fg = c.horizon or c.base15 })
   hl("TroubleDirectory", { link = "Directory" })
   hl("TroubleIconDirectory", { link = "Directory" })
   hl("TroubleSource", { link = "Comment" })
   hl("TroubleCode", { link = "Comment" })
-  hl("TroublePos", { fg = c.base05 })
-  hl("TroubleCount", { fg = c.base00, bg = c.base12 })
+  hl("TroublePos", { fg = c.parchment or c.base05 })
+  hl("TroubleCount", { fg = c.oled or c.base00, bg = c.ember or c.base12 })
   hl("TroubleStatusline", { link = "StatusLine" })
   for _, g in ipairs({ "TroubleIndent", "TroubleIndentFoldClosed", "TroubleIndentFoldOpen",
     "TroubleIndentTop", "TroubleIndentMiddle", "TroubleIndentLast", "TroubleIndentWs" }) do
-    hl(g, { fg = c.base02 })
+    hl(g, { fg = c.border_subtle or c.base02 })
   end
 
   -- blink.cmp
@@ -921,12 +999,12 @@ function M.load(override)
   hl("BlinkCmpMenuSelection", { link = "PmenuSel" })
   hl("BlinkCmpScrollBarGutter", { link = "PmenuSbar" })
   hl("BlinkCmpScrollBarThumb", { link = "PmenuThumb" })
-  hl("BlinkCmpLabel", { fg = c.base04 })
-  hl("BlinkCmpLabelDeprecated", { fg = c.base03, strikethrough = true })
-  hl("BlinkCmpLabelMatch", { fg = c.base08, bold = true })
+  hl("BlinkCmpLabel", { fg = c.paper or c.base04 })
+  hl("BlinkCmpLabelDeprecated", { fg = c.cinder or c.base03, strikethrough = true })
+  hl("BlinkCmpLabelMatch", { fg = c.photon or c.base08, bold = true })
   hl("BlinkCmpLabelDescription", { link = "Comment" })
   hl("BlinkCmpLabelDetail", { link = "Comment" })
-  hl("BlinkCmpKind", { fg = c.base12 })
+  hl("BlinkCmpKind", { fg = c.ember or c.base12 })
   hl("BlinkCmpDoc", { link = "NormalFloat" })
   hl("BlinkCmpDocBorder", { link = "FloatBorder" })
   hl("BlinkCmpSignatureHelpBorder", { link = "FloatBorder" })
@@ -935,71 +1013,71 @@ function M.load(override)
   hl("FzfLuaNormal", { link = "NormalFloat" })
   hl("FzfLuaBorder", { link = "FloatBorder" })
   hl("FzfLuaTitle", { link = "Title" })
-  hl("FzfLuaHeaderBind", { fg = c.base12 })
-  hl("FzfLuaHeaderText", { fg = c.base10 })
+  hl("FzfLuaHeaderBind", { fg = c.ember or c.base12 })
+  hl("FzfLuaHeaderText", { fg = c.flare or c.base09 })
   hl("FzfLuaDirPart", { link = "Comment" })
-  hl("FzfLuaFzfMatch", { fg = c.base08, bold = true })
-  hl("FzfLuaFzfPrompt", { fg = c.base12 })
-  hl("FzfLuaPathColNr", { fg = c.base11 })
-  hl("FzfLuaPathLineNr", { fg = c.base13 })
-  hl("FzfLuaBufName", { fg = c.base14 })
-  hl("FzfLuaBufNr", { fg = c.base15 })
-  hl("FzfLuaBufFlagCur", { fg = c.base10 })
-  hl("FzfLuaBufFlagAlt", { fg = c.base11 })
+  hl("FzfLuaFzfMatch", { fg = c.photon or c.base08, bold = true })
+  hl("FzfLuaFzfPrompt", { fg = c.photon or c.base08 })
+  hl("FzfLuaPathColNr", { fg = c.gravity_blue or c.base11 })
+  hl("FzfLuaPathLineNr", { fg = c.quasar_green or c.base13 })
+  hl("FzfLuaBufName", { fg = c.nova or c.base14 })
+  hl("FzfLuaBufNr", { fg = c.horizon or c.base15 })
+  hl("FzfLuaBufFlagCur", { fg = c.flare or c.base09 })
+  hl("FzfLuaBufFlagAlt", { fg = c.gravity_blue or c.base11 })
   hl("FzfLuaTabTitle", { link = "Title" })
-  hl("FzfLuaTabMarker", { fg = c.base12 })
-  hl("FzfLuaLiveSym", { fg = c.base08 })
+  hl("FzfLuaTabMarker", { fg = c.ember or c.base12 })
+  hl("FzfLuaLiveSym", { fg = c.photon or c.base08 })
 
   -- diffview.nvim
   hl("DiffviewNormal", { link = "Normal" })
   hl("DiffviewDim1", { link = "Comment" })
-  hl("DiffviewPrimary", { fg = c.base10 })
-  hl("DiffviewSecondary", { fg = c.base12 })
+  hl("DiffviewPrimary", { fg = c.flare or c.base09 })
+  hl("DiffviewSecondary", { fg = c.ember or c.base12 })
   hl("DiffviewWinSeparator", { link = "WinSeparator" })
-  hl("DiffviewFilePanelTitle", { fg = c.base10, bold = true })
-  hl("DiffviewFilePanelCounter", { fg = c.base12, bold = true })
+  hl("DiffviewFilePanelTitle", { fg = c.flare or c.base09, bold = true })
+  hl("DiffviewFilePanelCounter", { fg = c.ember or c.base12, bold = true })
   hl("DiffviewFilePanelRootPath", { link = "Comment" })
   hl("DiffviewFilePanelFileName", { link = "Normal" })
-  hl("DiffviewFilePanelSelected", { fg = c.base10 })
+  hl("DiffviewFilePanelSelected", { fg = c.light or c.base06, bg = c.bg_selection or c.base02 })
   hl("DiffviewFilePanelPath", { link = "Comment" })
   hl("DiffviewFilePanelInsertions", { link = "DiffAdded" })
   hl("DiffviewFilePanelDeletions", { link = "DiffRemoved" })
-  hl("DiffviewFilePanelConflicts", { fg = c.base10 })
+  hl("DiffviewFilePanelConflicts", { fg = c.nova or c.base14 })
   hl("DiffviewFolderName", { link = "Directory" })
   hl("DiffviewFolderSign", { link = "Directory" })
   hl("DiffviewHash", { link = "Comment" })
-  hl("DiffviewReference", { fg = c.base14 })
-  hl("DiffviewReflogSelector", { fg = c.base15 })
+  hl("DiffviewReference", { fg = c.gravity_blue or c.base11 })
+  hl("DiffviewReflogSelector", { fg = c.horizon or c.base15 })
   hl("DiffviewStatusAdded", { link = "DiffAdded" })
-  hl("DiffviewStatusUntracked", { fg = c.base14 })
+  hl("DiffviewStatusUntracked", { fg = c.quasar_green or c.base13 })
   hl("DiffviewStatusModified", { link = "DiffChanged" })
   hl("DiffviewStatusRenamed", { link = "DiffChanged" })
   hl("DiffviewStatusCopied", { link = "DiffChanged" })
   hl("DiffviewStatusTypeChange", { link = "DiffChanged" })
-  hl("DiffviewStatusUnmerged", { fg = c.base10 })
+  hl("DiffviewStatusUnmerged", { fg = c.nova or c.base14 })
   hl("DiffviewStatusUnknown", { link = "Comment" })
   hl("DiffviewStatusDeleted", { link = "DiffRemoved" })
-  hl("DiffviewStatusBroken", { fg = c.base10 })
+  hl("DiffviewStatusBroken", { fg = c.redshift or c.base10 })
   hl("DiffviewStatusIgnored", { link = "Comment" })
 
   -- indent-blankline.nvim (ibl v3)
-  hl("IblIndent", { fg = c.base02 })
-  hl("IblWhitespace", { fg = c.base02 })
-  hl("IblScope", { fg = c.base11 })
+  hl("IblIndent", { fg = c.border_subtle or c.base02 })
+  hl("IblWhitespace", { fg = c.border_subtle or c.base02 })
+  hl("IblScope", { fg = c.border_visible or c.base08 })
 
   -- rainbow-delimiters.nvim
-  hl("RainbowDelimiterRed", { fg = c.base10 })
-  hl("RainbowDelimiterYellow", { fg = c.yellow })
-  hl("RainbowDelimiterBlue", { fg = c.base09 })
-  hl("RainbowDelimiterOrange", { fg = c.base12 })
-  hl("RainbowDelimiterGreen", { fg = c.base13 })
-  hl("RainbowDelimiterViolet", { fg = c.base14 })
-  hl("RainbowDelimiterCyan", { fg = c.base07 })
+  hl("RainbowDelimiterRed", { fg = c.corona or c.base12 })
+  hl("RainbowDelimiterYellow", { fg = c.gold or c.base08 })
+  hl("RainbowDelimiterBlue", { fg = c.ion or c.base07 })
+  hl("RainbowDelimiterOrange", { fg = c.nova or c.base14 })
+  hl("RainbowDelimiterGreen", { fg = c.quasar_green or c.base13 })
+  hl("RainbowDelimiterViolet", { fg = c.horizon or c.base15 })
+  hl("RainbowDelimiterCyan", { fg = c.photon or c.yellow })
 
   -- nvim-treesitter-context
-  hl("TreesitterContext", { bg = c.base01 })
-  hl("TreesitterContextLineNumber", { fg = c.base10, bg = c.base01 })
-  hl("TreesitterContextBottom", { underline = true, sp = c.base02 })
+  hl("TreesitterContext", { bg = c.bg_void or c.base01 })
+  hl("TreesitterContextLineNumber", { fg = c.photon or c.base08, bg = c.bg_void or c.base01 })
+  hl("TreesitterContextBottom", { underline = true, sp = c.border_subtle or c.base02 })
 
   -- vim-illuminate
   hl("IlluminatedWordText", { link = "LspReferenceText" })
@@ -1007,84 +1085,84 @@ function M.load(override)
   hl("IlluminatedWordWrite", { link = "LspReferenceWrite" })
 
   -- leap.nvim
-  hl("LeapMatch", { fg = c.base00, bg = c.base12, bold = true })
-  hl("LeapLabel", { fg = c.base10, bold = true })
+  hl("LeapMatch", { fg = c.oled or c.base00, bg = c.photon or c.base08, bold = true })
+  hl("LeapLabel", { fg = c.flare or c.base09, bold = true })
   hl("LeapBackdrop", { link = "Comment" })
 
   -- render-markdown.nvim
   for i = 1, 6 do
     hl("RenderMarkdownH" .. i, { link = "markdownH" .. i })
-    hl("RenderMarkdownH" .. i .. "Bg", { bg = c.base01 })
+    hl("RenderMarkdownH" .. i .. "Bg", { bg = c.bg_surface or c.base01 })
   end
-  hl("RenderMarkdownCode", { bg = c.base01 })
-  hl("RenderMarkdownCodeInline", { fg = c.base14, bg = c.base01 })
-  hl("RenderMarkdownBullet", { fg = c.base08 })
-  hl("RenderMarkdownTableHead", { fg = c.base12 })
-  hl("RenderMarkdownTableRow", { fg = c.base04 })
-  hl("RenderMarkdownSuccess", { fg = c.base13 })
+  hl("RenderMarkdownCode", { bg = c.bg_elevated or c.base01 })
+  hl("RenderMarkdownCodeInline", { fg = c.corona or c.base12, bg = c.bg_elevated or c.base01 })
+  hl("RenderMarkdownBullet", { fg = c.gold or c.base08 })
+  hl("RenderMarkdownTableHead", { fg = c.ember or c.base12 })
+  hl("RenderMarkdownTableRow", { fg = c.paper or c.base04 })
+  hl("RenderMarkdownSuccess", { fg = c.quasar_green or c.base13 })
   hl("RenderMarkdownInfo", { link = "DiagnosticInfo" })
   hl("RenderMarkdownHint", { link = "DiagnosticHint" })
   hl("RenderMarkdownWarn", { link = "DiagnosticWarn" })
   hl("RenderMarkdownError", { link = "DiagnosticError" })
 
   -- nvim-dap
-  hl("DapBreakpoint", { fg = c.base10 })
-  hl("DapBreakpointCondition", { fg = c.base12 })
+  hl("DapBreakpoint", { fg = c.redshift or c.base10 })
+  hl("DapBreakpointCondition", { fg = c.ember or c.base12 })
   hl("DapBreakpointRejected", { link = "Comment" })
-  hl("DapLogPoint", { fg = c.base11 })
-  hl("DapStopped", { fg = c.base13 })
+  hl("DapLogPoint", { fg = c.gravity_blue or c.base11 })
+  hl("DapStopped", { fg = c.quasar_green or c.base13 })
 
   -- nvim-dap-ui
   hl("DapUINormal", { link = "NormalFloat" })
-  hl("DapUIVariable", { fg = c.base04 })
-  hl("DapUIScope", { fg = c.base08 })
-  hl("DapUIType", { fg = c.base09 })
-  hl("DapUIValue", { fg = c.base04 })
-  hl("DapUIModifiedValue", { fg = c.base12, bold = true })
-  hl("DapUIDecoration", { fg = c.base08 })
-  hl("DapUIThread", { fg = c.base13 })
-  hl("DapUIStoppedThread", { fg = c.base08 })
-  hl("DapUISource", { fg = c.base14 })
-  hl("DapUILineNumber", { fg = c.base08 })
+  hl("DapUIVariable", { fg = c.paper or c.base04 })
+  hl("DapUIScope", { fg = c.gold or c.base08 })
+  hl("DapUIType", { fg = c.ion or c.base07 })
+  hl("DapUIValue", { fg = c.paper or c.base04 })
+  hl("DapUIModifiedValue", { fg = c.ember or c.base12, bold = true })
+  hl("DapUIDecoration", { fg = c.gold or c.base08 })
+  hl("DapUIThread", { fg = c.quasar_green or c.base13 })
+  hl("DapUIStoppedThread", { fg = c.gold or c.base08 })
+  hl("DapUISource", { fg = c.gravity_blue or c.base11 })
+  hl("DapUILineNumber", { fg = c.photon or c.base08 })
   hl("DapUIFloatNormal", { link = "NormalFloat" })
   hl("DapUIFloatBorder", { link = "FloatBorder" })
-  hl("DapUIWatchesEmpty", { fg = c.base10 })
-  hl("DapUIWatchesValue", { fg = c.base13 })
+  hl("DapUIWatchesEmpty", { fg = c.redshift or c.base10 })
+  hl("DapUIWatchesValue", { fg = c.quasar_green or c.base13 })
   hl("DapUIWatchesError", { link = "DiagnosticError" })
-  hl("DapUIBreakpointsPath", { fg = c.base08 })
-  hl("DapUIBreakpointsInfo", { fg = c.base13 })
-  hl("DapUIBreakpointsCurrentLine", { fg = c.base13, bold = true })
-  hl("DapUIBreakpointsLine", { fg = c.base08 })
+  hl("DapUIBreakpointsPath", { fg = c.gold or c.base08 })
+  hl("DapUIBreakpointsInfo", { fg = c.quasar_green or c.base13 })
+  hl("DapUIBreakpointsCurrentLine", { fg = c.quasar_green or c.base13, bold = true })
+  hl("DapUIBreakpointsLine", { fg = c.gold or c.base08 })
   hl("DapUIBreakpointsDisabledLine", { link = "Comment" })
-  hl("DapUICurrentFrameName", { fg = c.base13, bold = true })
-  hl("DapUIStepOver", { fg = c.base11 })
-  hl("DapUIStepInto", { fg = c.base11 })
-  hl("DapUIStepBack", { fg = c.base11 })
-  hl("DapUIStepOut", { fg = c.base11 })
-  hl("DapUIStop", { fg = c.base10 })
-  hl("DapUIPlayPause", { fg = c.base13 })
-  hl("DapUIRestart", { fg = c.base13 })
+  hl("DapUICurrentFrameName", { fg = c.quasar_green or c.base13, bold = true })
+  hl("DapUIStepOver", { fg = c.gravity_blue or c.base11 })
+  hl("DapUIStepInto", { fg = c.gravity_blue or c.base11 })
+  hl("DapUIStepBack", { fg = c.gravity_blue or c.base11 })
+  hl("DapUIStepOut", { fg = c.gravity_blue or c.base11 })
+  hl("DapUIStop", { fg = c.redshift or c.base10 })
+  hl("DapUIPlayPause", { fg = c.quasar_green or c.base13 })
+  hl("DapUIRestart", { fg = c.quasar_green or c.base13 })
   hl("DapUIUnavailable", { link = "Comment" })
-  hl("DapUIWinSelect", { fg = c.base12 })
+  hl("DapUIWinSelect", { fg = c.ember or c.base12 })
   hl("DapUIEndofBuffer", { link = "EndOfBuffer" })
 
   -- oil.nvim
   hl("OilDir", { link = "Directory" })
   hl("OilDirIcon", { link = "Directory" })
   hl("OilFile", { link = "Normal" })
-  hl("OilLink", { fg = c.base15 })
-  hl("OilLinkTarget", { fg = c.base14 })
-  hl("OilOrphanLink", { fg = c.base10 })
-  hl("OilOrphanLinkTarget", { fg = c.base10 })
-  hl("OilSocket", { fg = c.base14 })
+  hl("OilLink", { fg = c.gravity_blue or c.base11 })
+  hl("OilLinkTarget", { fg = c.nova or c.base14 })
+  hl("OilOrphanLink", { fg = c.redshift or c.base10 })
+  hl("OilOrphanLinkTarget", { fg = c.redshift or c.base10 })
+  hl("OilSocket", { fg = c.nova or c.base14 })
   hl("OilCreate", { link = "DiffAdded" })
   hl("OilDelete", { link = "DiffRemoved" })
   hl("OilMove", { link = "DiffChanged" })
   hl("OilCopy", { link = "DiffChanged" })
   hl("OilChange", { link = "DiffChanged" })
   hl("OilRestore", { link = "DiffAdded" })
-  hl("OilPurge", { fg = c.base10 })
-  hl("OilTrash", { fg = c.base10 })
+  hl("OilPurge", { fg = c.redshift or c.base10 })
+  hl("OilTrash", { fg = c.redshift or c.base10 })
   hl("OilTrashSourcePath", { link = "Comment" })
   for _, g in ipairs({ "OilHidden", "OilDirHidden", "OilFileHidden", "OilSocketHidden",
     "OilLinkHidden", "OilEmpty" }) do
@@ -1093,55 +1171,47 @@ function M.load(override)
 
   -- fidget.nvim
   hl("FidgetTask", { link = "Comment" })
-  hl("FidgetTitle", { fg = c.base12 })
+  hl("FidgetTitle", { fg = c.ember or c.base12 })
 
   -- lspsaga.nvim
   hl("SagaNormal", { link = "NormalFloat" })
   hl("SagaBorder", { link = "FloatBorder" })
   hl("SagaTitle", { link = "Title" })
-  hl("SagaText", { fg = c.base04 })
-  hl("SagaCount", { fg = c.base12 })
-  hl("SagaBeacon", { bg = c.base12 })
-  hl("SagaVirtLine", { fg = c.base02 })
-  hl("SagaSpinner", { fg = c.base12 })
-  hl("SagaSpinnerTitle", { fg = c.base11 })
-  hl("SagaSelect", { fg = c.base10 })
-  hl("SagaSearch", { fg = c.base08, bold = true })
-  hl("SagaFinderFname", { fg = c.base15 })
+  hl("SagaText", { fg = c.paper or c.base04 })
+  hl("SagaCount", { fg = c.ember or c.base12 })
+  hl("SagaBeacon", { bg = c.ember or c.base12 })
+  hl("SagaVirtLine", { fg = c.border_subtle or c.base02 })
+  hl("SagaSpinner", { fg = c.ember or c.base12 })
+  hl("SagaSpinnerTitle", { fg = c.gravity_blue or c.base11 })
+  hl("SagaSelect", { fg = c.flare or c.base09 })
+  hl("SagaSearch", { fg = c.photon or c.base08, bold = true })
+  hl("SagaFinderFname", { fg = c.horizon or c.base15 })
   hl("SagaDetail", { link = "Comment" })
-  hl("SagaFileName", { fg = c.base15 })
+  hl("SagaFileName", { fg = c.horizon or c.base15 })
   hl("SagaFolderName", { link = "Directory" })
-  hl("SagaInCurrent", { fg = c.base10 })
+  hl("SagaInCurrent", { fg = c.flare or c.base09 })
   hl("RenameNormal", { link = "NormalFloat" })
-  hl("RenameMatch", { fg = c.base08, bold = true })
+  hl("RenameMatch", { fg = c.photon or c.base08, bold = true })
 
   -- dropbar.nvim
-  hl("DropBarMenuHoverEntry", { bg = c.base01 })
-  hl("DropBarMenuHoverIcon", { fg = c.base12 })
-  hl("DropBarMenuHoverSymbol", { fg = c.base08, bold = true })
+  hl("DropBarMenuHoverEntry", { bg = c.bg_selection_soft or c.base01 })
+  hl("DropBarMenuHoverIcon", { fg = c.ember or c.base12 })
+  hl("DropBarMenuHoverSymbol", { fg = c.photon or c.base08, bold = true })
   hl("DropBarIconUISeparator", { link = "Comment" })
-
-  -- Light/paper fixups (#59 LSP references, IncSearch fg). Dark is unaffected.
-  if variant ~= "dark" then
-    hl("IncSearch", { fg = c.base00, bg = c.base10 })
-    hl("LspReferenceText", { bg = c.base02 })
-    hl("LspReferenceRead", { bg = c.base02 })
-    hl("LspReferenceWrite", { bg = c.base02 })
-  end
 
   -- Dim inactive windows (#37).
   if cfg.dim_inactive then
-    local dim = (variant == "dark") and c.blend or c.base01
-    hl("NormalNC", { fg = c.base04, bg = dim })
+    hl("NormalNC", { fg = c.paper or c.base04, bg = c.bg_void or c.base01 })
   end
 
-  -- Transparency (#103, #41): clear editor, gutter and float backgrounds.
+  -- Transparency (#103, #41): clear large editor surfaces only. Floats, pickers,
+  -- completion menus, hovers and command palettes stay backed by darkness.
   if cfg.transparent then
     local groups = {
-      "Normal", "NormalNC", "NormalFloat", "FloatBorder", "SignColumn", "FoldColumn",
+      "Normal", "NormalNC", "SignColumn", "FoldColumn", "MsgArea",
       "LineNr", "CursorLineNr", "EndOfBuffer", "WinSeparator", "VertSplit",
       "NvimTreeNormal", "NvimTreeNormalNC", "NvimTreeWinSeparator",
-      "TelescopeNormal", "TelescopeBorder",
+      "NeoTreeNormal", "NeoTreeNormalNC", "NeoTreeWinSeparator",
     }
     for _, g in ipairs(groups) do
       local current = vim.api.nvim_get_hl(0, { name = g })
@@ -1149,6 +1219,24 @@ function M.load(override)
       current.ctermbg = nil
       vim.api.nvim_set_hl(0, g, current)
     end
+    hl("Normal", { fg = c.parchment or c.base05, bg = c.none })
+    hl("NormalNC", { fg = c.parchment or c.base05, bg = c.none })
+    hl("MsgArea", { fg = c.parchment or c.base05, bg = c.none })
+    hl("Comment", { fg = c.mist or c.base03, bg = c.none, italic = true })
+    hl("SpecialComment", { fg = c.mist or c.base03, bg = c.none, italic = true })
+    hl("LineNr", { fg = c.dust or c.base03, bg = c.none })
+    hl("SignColumn", { fg = c.dust or c.base03, bg = c.none })
+    hl("FoldColumn", { fg = c.dust or c.base03, bg = c.none })
+    hl("CursorLineNr", { fg = c.photon or c.base08, bg = c.none, bold = true })
+    hl("Delimiter", { fg = c.mist or c.base03, bg = c.none })
+    hl("@punctuation.delimiter", { fg = c.mist or c.base03, bg = c.none })
+    hl("@punctuation.bracket", { fg = c.mist or c.base03, bg = c.none })
+    hl("@punctuation.special", { fg = c.nova or c.base14, bg = c.none })
+    hl("NvimTreeNormal", { fg = c.paper or c.base04, bg = c.none })
+    hl("NvimTreeNormalNC", { fg = c.dust or c.base03, bg = c.none })
+    hl("NeoTreeNormal", { fg = c.paper or c.base04, bg = c.none })
+    hl("NeoTreeNormalNC", { fg = c.dust or c.base03, bg = c.none })
+    hl("StatusLineNC", { fg = c.dust or c.base03, bg = c.none })
   end
 
   return c
