@@ -2,489 +2,566 @@
 --
 -- A pure-Lua descendant of oxocarbon.nvim (IBM Carbon inspired), restyled so the
 -- signature accent is ember rather than magenta:
---   ember-bright #dd5500  (deep, burnt ember)
---   ember-hot    #ee6611  (brighter, hotter ember)
+--   dark:  ember-bright #dd5500 / ember-hot #ee6611
+--   light: ember-deep   #b34400 / ember     #c65300  (tuned for WCAG-AA on white)
 --
--- The grey ramp (base01–base05) is blended perceptually in HSLuv space between
--- the background (base00) and foreground (base06) anchors. See colorutils.lua.
+-- Requiring this module has NO side effects. colors/singularity.lua calls
+-- require("singularity").load() to apply it; .setup{} configures it and
+-- .get_palette() returns the active colours (used by the lualine theme).
 
-local blend_hex = require("singularity.colorutils").blend_hex
+local colorutils = require("singularity.colorutils")
+local blend_hex = colorutils.blend_hex
 
-if vim.g.colors_name then
-  vim.cmd.hi("clear")
-end
+local M = {}
 
-vim.g.colors_name = "singularity"
-vim.o.termguicolors = true
-
-local base00 = "#161616"
-local base06 = "#ffffff"
-local base09 = "#78a9ff"
-
--- Dark palette. base10/base12 are the ember accents (formerly the oxocarbon
--- pinks #ee5396 / #ff7eb6).
-local dark = {
-  base00 = base00,
-  base01 = blend_hex(base00, base06, 0.085),
-  base02 = blend_hex(base00, base06, 0.18),
-  base03 = blend_hex(base00, base06, 0.3),
-  base04 = blend_hex(base00, base06, 0.82),
-  base05 = blend_hex(base00, base06, 0.95),
-  base06 = base06,
-  base07 = "#08bdba",
-  base08 = "#3ddbd9",
-  base09 = base09,
-  base10 = "#dd5500", -- ember-bright (was #ee5396)
-  base11 = "#33b1ff",
-  base12 = "#ee6611", -- ember-hot   (was #ff7eb6)
-  base13 = "#42be65",
-  base14 = "#be95ff",
-  base15 = "#82cfff",
-  blend = "#131313",
-  none = "NONE",
+-- Optional configuration. The colorscheme works fully without calling setup().
+M.config = {
+  italics = true,          -- italic comments / emphasis (#40)
+  transparent = false,     -- clear editor + gutter + float backgrounds (#103, #41)
+  dim_inactive = false,    -- dimmer background for inactive (NormalNC) windows (#37)
+  colored_headings = true, -- per-level markdown heading colours (#80)
 }
 
--- Light palette. A tonal counterpart of the dark theme rather than a separate
--- design: ember is the signature accent in the SAME roles (base10 errors and
--- headings, base12 functions), the syntax colours stay cool (blue/teal), and
--- every accent is WCAG-AA legible on white. The greys are a Material blue-grey
--- ramp so comments recede instead of rendering near-black. Because the bright
--- embers fail contrast on white, light uses deeper ember shades.
-local light = {
-  base00 = base06,    -- #ffffff
-  base01 = "#eceff1", -- subtle bg (CursorLine, Pmenu)
-  base02 = "#cfd8dc", -- selection
-  base03 = "#78828a", -- comments / line numbers (dim, ~3.9:1)
-  base04 = "#37474f", -- main foreground
-  base05 = "#546e7a", -- secondary foreground
-  base06 = "#263238", -- strong foreground
-  base07 = "#0e7c7b", -- teal
-  base08 = "#0a8385", -- cyan / functions
-  base09 = "#1a66d6", -- blue / keywords
-  base10 = "#b34400", -- ember-deep — signature (errors, headings); was #FF6F00
-  base11 = "#0f52c4", -- royal blue
-  base12 = "#c65300", -- ember — functions / decorators
-  base13 = "#2a8049", -- green
-  base14 = "#7b3fd4", -- violet / strings
-  base15 = "#0e7693", -- cyan-blue / numbers
-  blend = "#f4f6f8",  -- float background
-  none = "NONE",
-}
-
-local singularity = (vim.o.background == "dark") and dark or light
-
-vim.g["terminal_color_0"] = singularity.base01
-vim.g["terminal_color_1"] = singularity.base11
-vim.g["terminal_color_2"] = singularity.base14
-vim.g["terminal_color_3"] = singularity.base13
-vim.g["terminal_color_4"] = singularity.base09
-vim.g["terminal_color_5"] = singularity.base15
-vim.g["terminal_color_6"] = singularity.base08
-vim.g["terminal_color_7"] = singularity.base05
-vim.g["terminal_color_8"] = singularity.base03
-vim.g["terminal_color_9"] = singularity.base11
-vim.g["terminal_color_10"] = singularity.base14
-vim.g["terminal_color_11"] = singularity.base13
-vim.g["terminal_color_12"] = singularity.base09
-vim.g["terminal_color_13"] = singularity.base15
-vim.g["terminal_color_14"] = singularity.base07
-vim.g["terminal_color_15"] = singularity.base06
-vim.api.nvim_set_hl(0, "ColorColumn", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "Cursor", {fg = singularity.base00, bg = singularity.base04})
-vim.api.nvim_set_hl(0, "CursorLine", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "CursorColumn", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "CursorLineNr", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "QuickFixLine", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "Error", {fg = singularity.base10, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "LineNr", {fg = singularity.base03, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "NonText", {fg = singularity.base02, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Normal", {fg = singularity.base04, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "Pmenu", {fg = singularity.base04, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "PmenuSbar", {fg = singularity.base04, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "PmenuSel", {fg = singularity.base08, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "PmenuThumb", {fg = singularity.base08, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "SpecialKey", {fg = singularity.base03, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Visual", {fg = singularity.none, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "VisualNOS", {fg = singularity.none, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "TooLong", {fg = singularity.none, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "Debug", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Macro", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "MatchParen", {fg = singularity.none, bg = singularity.base02, underline = true})
-vim.api.nvim_set_hl(0, "Bold", {fg = singularity.none, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "Italic", {fg = singularity.none, bg = singularity.none, italic = true})
-vim.api.nvim_set_hl(0, "Underlined", {fg = singularity.none, bg = singularity.none, underline = true})
-vim.api.nvim_set_hl(0, "DiagnosticWarn", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiagnosticError", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiagnosticInfo", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiagnosticHint", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineWarn", {fg = singularity.base14, bg = singularity.none, undercurl = true})
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", {fg = singularity.base10, bg = singularity.none, undercurl = true})
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineInfo", {fg = singularity.base04, bg = singularity.none, undercurl = true})
-vim.api.nvim_set_hl(0, "DiagnosticUnderlineHint", {fg = singularity.base04, bg = singularity.none, undercurl = true})
-vim.api.nvim_set_hl(0, "HealthError", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HealthWarning", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HealthSuccess", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@comment", {link = "Comment"})
-vim.api.nvim_set_hl(0, "@text.literal.commodity", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.date", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.date.effective", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.interval", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.status", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.quantity", {fg = singularity.base11, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@number.quantity.negative", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "LspCodeLens", {fg = singularity.none, bg = singularity.base03})
-vim.api.nvim_set_hl(0, "LspReferenceText", {fg = singularity.none, bg = singularity.base03})
-vim.api.nvim_set_hl(0, "LspReferenceread", {fg = singularity.none, bg = singularity.base03})
-vim.api.nvim_set_hl(0, "LspReferenceWrite", {fg = singularity.none, bg = singularity.base03})
-vim.api.nvim_set_hl(0, "LspSignatureActiveParameter", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@lsp.type.class", {link = "Structure"})
-vim.api.nvim_set_hl(0, "@lsp.type.decorator", {link = "Decorator"})
-vim.api.nvim_set_hl(0, "@lsp.type.decorator.markdown", {link = "Structure"})
-vim.api.nvim_set_hl(0, "@lsp.type.function", {link = "@function"})
-vim.api.nvim_set_hl(0, "@lsp.type.macro", {link = "Macro"})
-vim.api.nvim_set_hl(0, "@lsp.type.method", {link = "@function"})
-vim.api.nvim_set_hl(0, "@lsp.type.struct", {link = "Structure"})
-vim.api.nvim_set_hl(0, "@lsp.type.type", {link = "Type"})
-vim.api.nvim_set_hl(0, "@lsp.type.typeParameter", {link = "Typedef"})
-vim.api.nvim_set_hl(0, "@lsp.type.selfParameter", {link = "@variable.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.type.builtinConstant", {link = "@constant.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.type.magicFunction", {link = "@function.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.type.boolean", {link = "@boolean"})
-vim.api.nvim_set_hl(0, "@lsp.type.builtinType", {link = "@type.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.type.comment", {link = "@comment"})
-vim.api.nvim_set_hl(0, "@lsp.type.enum", {link = "@type"})
-vim.api.nvim_set_hl(0, "@lsp.type.enumMember", {link = "@constant"})
-vim.api.nvim_set_hl(0, "@lsp.type.escapeSequence", {link = "@string.escape"})
-vim.api.nvim_set_hl(0, "@lsp.type.formatSpecifier", {link = "@punctuation.special"})
-vim.api.nvim_set_hl(0, "@lsp.type.keyword", {link = "@keyword"})
-vim.api.nvim_set_hl(0, "@lsp.type.namespace", {link = "@namespace"})
-vim.api.nvim_set_hl(0, "@lsp.type.number", {link = "@number"})
-vim.api.nvim_set_hl(0, "@lsp.type.operator", {link = "@operator"})
-vim.api.nvim_set_hl(0, "@lsp.type.parameter", {link = "@parameter"})
-vim.api.nvim_set_hl(0, "@lsp.type.property", {link = "@property"})
-vim.api.nvim_set_hl(0, "@lsp.type.selfKeyword", {link = "@variable.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.type.string.rust", {link = "@string"})
-vim.api.nvim_set_hl(0, "@lsp.type.typeAlias", {link = "@type.definition"})
-vim.api.nvim_set_hl(0, "@lsp.type.unresolvedReference", {link = "Error"})
-vim.api.nvim_set_hl(0, "@lsp.type.variable", {link = "@variable"})
-vim.api.nvim_set_hl(0, "@lsp.mod.readonly", {link = "@constant"})
-vim.api.nvim_set_hl(0, "@lsp.mod.typeHint", {link = "Type"})
-vim.api.nvim_set_hl(0, "@lsp.mod.builtin", {link = "Special"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.class.defaultLibrary", {link = "@type.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.enum.defaultLibrary", {link = "@type.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.enumMember.defaultLibrary", {link = "@constant.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.function.defaultLibrary", {link = "@function.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.keyword.async", {link = "@keyword.coroutine"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.macro.defaultLibrary", {link = "@function.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.method.defaultLibrary", {link = "@function.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.operator.injected", {link = "@operator"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.string.injected", {link = "@string"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.operator.controlFlow", {link = "@exception"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.keyword.documentation", {link = "Special"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.variable.global", {link = "@constant"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.variable.static", {link = "@constant"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.variable.defaultLibrary", {link = "Special"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.function.builtin", {link = "@function.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.function.readonly", {link = "@method"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.variable.defaultLibrary", {link = "@variable.builtin"})
-vim.api.nvim_set_hl(0, "@lsp.typemod.variable.injected", {link = "@variable"})
-vim.api.nvim_set_hl(0, "Folded", {fg = singularity.base02, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "FoldColumn", {fg = singularity.base01, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "SignColumn", {fg = singularity.base01, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "Directory", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "EndOfBuffer", {fg = singularity.base01, bg = singularity.none})
-vim.api.nvim_set_hl(0, "ErrorMsg", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "ModeMsg", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "MoreMsg", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Question", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Substitute", {fg = singularity.base01, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "WarningMsg", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "WildMenu", {fg = singularity.base08, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "helpHyperTextJump", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "helpSpecial", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "helpHeadline", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "helpHeader", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffAdded", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffChanged", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffRemoved", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffAdd", {bg = "#122f2f", fg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffChange", {bg = "#222a39", fg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffText", {bg = "#2f3f5c", fg = singularity.none})
-vim.api.nvim_set_hl(0, "DiffDelete", {bg = "#361c28", fg = singularity.none})
-vim.api.nvim_set_hl(0, "IncSearch", {fg = singularity.base06, bg = singularity.base10})
-vim.api.nvim_set_hl(0, "Search", {fg = singularity.base01, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "TabLine", {link = "StatusLineNC"})
-vim.api.nvim_set_hl(0, "TabLineFill", {link = "TabLine"})
-vim.api.nvim_set_hl(0, "TabLineSel", {link = "StatusLine"})
-vim.api.nvim_set_hl(0, "Title", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "VertSplit", {fg = singularity.base01, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "WinSeparator", {fg = singularity.base01, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "Boolean", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Character", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Comment", {fg = singularity.base03, bg = singularity.none, italic = true})
-vim.api.nvim_set_hl(0, "Conceal", {fg = singularity.none, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Conditional", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Constant", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Decorator", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Define", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Delimeter", {fg = singularity.base06, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Exception", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Float", {link = "Number"})
-vim.api.nvim_set_hl(0, "Function", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Identifier", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Include", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Keyword", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Label", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Number", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Operator", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "PreProc", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Repeat", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Special", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "SpecialChar", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "SpecialComment", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Statement", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "StorageClass", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "String", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Structure", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Tag", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Todo", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Type", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "Typedef", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "markdownBlockquote", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "markdownBold", {link = "Bold"})
-vim.api.nvim_set_hl(0, "markdownItalic", {link = "Italic"})
-vim.api.nvim_set_hl(0, "markdownBoldItalic", {fg = singularity.none, bg = singularity.none, bold = true, italic = true})
-vim.api.nvim_set_hl(0, "markdownRule", {link = "Comment"})
-vim.api.nvim_set_hl(0, "markdownH1", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "markdownH2", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownH3", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownH4", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownH5", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownH6", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownHeadingDelimiter", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownHeadingRule", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "markdownUrl", {fg = singularity.base14, bg = singularity.none, underline = true})
-vim.api.nvim_set_hl(0, "markdownCode", {link = "String"})
-vim.api.nvim_set_hl(0, "markdownCodeBlock", {link = "markdownCode"})
-vim.api.nvim_set_hl(0, "markdownCodeDelimiter", {link = "markdownCode"})
-vim.api.nvim_set_hl(0, "markdownUrl", {link = "String"})
-vim.api.nvim_set_hl(0, "markdownListMarker", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "markdownOrderedListMarker", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@markup", {link = "@none"})
-vim.api.nvim_set_hl(0, "@markup.environment", {link = "Macro"})
-vim.api.nvim_set_hl(0, "@markup.environment.name", {link = "Type"})
-vim.api.nvim_set_hl(0, "@markup.emphasis", {italic = true})
-vim.api.nvim_set_hl(0, "@markup.italic", {italic = true})
-vim.api.nvim_set_hl(0, "@markup.strikethrough", {strikethrough = true})
-vim.api.nvim_set_hl(0, "@markup.strong", {bold = true})
-vim.api.nvim_set_hl(0, "@markup.underline", {underline = true})
-vim.api.nvim_set_hl(0, "@markup.heading", {link = "Title"})
-vim.api.nvim_set_hl(0, "@markup.heading.marker", {link = "markdownHeadingDelimiter"})
-vim.api.nvim_set_hl(0, "@markup.heading.1.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.2.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.3.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.4.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.5.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.6.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.7.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.heading.8.markdown", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "@markup.link", {link = "markdownUrl"})
-vim.api.nvim_set_hl(0, "@markup.link.label", {underline = true})
-vim.api.nvim_set_hl(0, "@markup.link.label.symbol", {link = "markdownItalic"})
-vim.api.nvim_set_hl(0, "@markup.link.label.markdown_inline", {link = "markdownItalic"})
-vim.api.nvim_set_hl(0, "@markup.link.title", {link = "Title"})
-vim.api.nvim_set_hl(0, "@markup.link.url", {link = "markdownUrl"})
-vim.api.nvim_set_hl(0, "@markup.link.destination", {link = "markdownUrl"})
-vim.api.nvim_set_hl(0, "@markup.link.description", {fg = singularity.blend, underline = true, italic = true})
-vim.api.nvim_set_hl(0, "@markup.list", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "@markup.list.bullet", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "@markup.list.checked", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "@markup.list.markdown", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "@markup.list.ordered", {link = "markdownOrderedListMarker"})
-vim.api.nvim_set_hl(0, "@markup.list.unchecked", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "@markup.math", {link = "Special"})
-vim.api.nvim_set_hl(0, "@markup.raw", {link = "String"})
-vim.api.nvim_set_hl(0, "@markup.raw.markdown_inline", {link = "String"})
-vim.api.nvim_set_hl(0, "@markup.quote", {link = "markdownBlockquote"})
-vim.api.nvim_set_hl(0, "@markup.literal", {link = "markdownCode"})
-vim.api.nvim_set_hl(0, "@markup.code.block", {link = "markdownCodeBlock"})
-vim.api.nvim_set_hl(0, "@markup.rule", {link = "Comment"})
-vim.api.nvim_set_hl(0, "asciidocAttributeEntry", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "asciidocAttributeList", {link = "asciidocAttributeEntry"})
-vim.api.nvim_set_hl(0, "asciidocAttributeRef", {link = "asciidocAttributeEntry"})
-vim.api.nvim_set_hl(0, "asciidocHLabel", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "asciidocOneLineTitle", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "asciidocQuotedMonospaced", {link = "markdownBlockquote"})
-vim.api.nvim_set_hl(0, "asciidocURL", {link = "markdownUrl"})
-vim.api.nvim_set_hl(0, "@comment", {link = "Comment"})
-vim.api.nvim_set_hl(0, "@error", {fg = singularity.base11, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@operator", {link = "Operator"})
-vim.api.nvim_set_hl(0, "@punctuation.delimiter", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@punctuation.bracket", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@punctuation.special", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@string", {link = "String"})
-vim.api.nvim_set_hl(0, "@string.regex", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@string.escape", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@character", {link = "Character"})
-vim.api.nvim_set_hl(0, "@boolean", {link = "Boolean"})
-vim.api.nvim_set_hl(0, "@number", {link = "Number"})
-vim.api.nvim_set_hl(0, "@float", {link = "Float"})
-vim.api.nvim_set_hl(0, "@function", {fg = singularity.base12, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "@function.builtin", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@function.macro", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@method", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@constructor", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@parameter", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@keyword", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@keyword.function", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@keyword.operator", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@conditional", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@repeat", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@label", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@include", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@exception", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@type", {link = "Type"})
-vim.api.nvim_set_hl(0, "@type.builtin", {link = "Type"})
-vim.api.nvim_set_hl(0, "@attribute", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@field", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@property", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@variable", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@variable.builtin", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@constant", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@constant.builtin", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@constant.macro", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@namespace", {fg = singularity.base07, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@symbol", {fg = singularity.base15, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "@text", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@text.strong", {fg = singularity.none, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@text.emphasis", {fg = singularity.base10, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "@text.underline", {fg = singularity.base10, bg = singularity.none, underline = true})
-vim.api.nvim_set_hl(0, "@text.strike", {fg = singularity.base10, bg = singularity.none, strikethrough = true})
-vim.api.nvim_set_hl(0, "@text.title", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@text.literal", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@text.uri", {fg = singularity.base14, bg = singularity.none, underline = true})
-vim.api.nvim_set_hl(0, "@tag", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@tag.attribute", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@tag.delimiter", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "@tag.builtin.tsx", {link = "@tag.tsx"})
-vim.api.nvim_set_hl(0, "@reference", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimInternalError", {fg = singularity.base00, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "NormalFloat", {fg = singularity.base05, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "FloatBorder", {fg = singularity.blend, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "NormalNC", {fg = singularity.base04, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "TermCursor", {fg = singularity.base00, bg = singularity.base04})
-vim.api.nvim_set_hl(0, "TermCursorNC", {fg = singularity.base00, bg = singularity.base04})
-vim.api.nvim_set_hl(0, "StatusLine", {fg = singularity.base04, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "StatusLineNC", {fg = singularity.base04, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "StatusReplace", {fg = singularity.base00, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "StatusInsert", {fg = singularity.base00, bg = singularity.base12})
-vim.api.nvim_set_hl(0, "StatusVisual", {fg = singularity.base00, bg = singularity.base14})
-vim.api.nvim_set_hl(0, "StatusTerminal", {fg = singularity.base00, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "StatusNormal", {fg = singularity.base00, bg = singularity.base15})
-vim.api.nvim_set_hl(0, "StatusCommand", {fg = singularity.base00, bg = singularity.base13})
-vim.api.nvim_set_hl(0, "StatusLineDiagnosticWarn", {fg = singularity.base14, bg = singularity.base00, bold = true})
-vim.api.nvim_set_hl(0, "StatusLineDiagnosticError", {fg = singularity.base10, bg = singularity.base00, bold = true})
-vim.api.nvim_set_hl(0, "TelescopeBorder", {fg = singularity.blend, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "TelescopePromptBorder", {fg = singularity.base02, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "TelescopePromptNormal", {fg = singularity.base05, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "TelescopePromptPrefix", {fg = singularity.base08, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "TelescopeNormal", {fg = singularity.none, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "TelescopePreviewTitle", {fg = singularity.base02, bg = singularity.base12})
-vim.api.nvim_set_hl(0, "TelescopePromptTitle", {fg = singularity.base02, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "TelescopeResultsTitle", {fg = singularity.blend, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "TelescopeSelection", {fg = singularity.none, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "TelescopePreviewLine", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "TelescopeMatching", {fg = singularity.base08, bg = singularity.none, bold = true, italic = true})
-vim.api.nvim_set_hl(0, "NotifyERRORBorder", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyWARNBorder", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyINFOBorder", {fg = singularity.base05, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyDEBUGBorder", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyTRACEBorder", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyERRORIcon", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyWARNIcon", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyINFOIcon", {fg = singularity.base05, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyDEBUGIcon", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyTRACEIcon", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyERRORTitle", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyWARNTitle", {fg = singularity.base14, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyINFOTitle", {fg = singularity.base05, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyDEBUGTitle", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NotifyTRACETitle", {fg = singularity.base13, bg = singularity.none})
-vim.api.nvim_set_hl(0, "CmpItemAbbr", {fg = "#adadad", bg = singularity.none})
-vim.api.nvim_set_hl(0, "CmpItemAbbrMatch", {fg = singularity.base05, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "CmpItemAbbrMatchFuzzy", {fg = singularity.base04, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "CmpItemMenu", {fg = singularity.base04, bg = singularity.none, italic = true})
-vim.api.nvim_set_hl(0, "CmpItemKindInterface", {fg = singularity.base01, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "CmpItemKindColor", {fg = singularity.base01, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", {fg = singularity.base01, bg = singularity.base08})
-vim.api.nvim_set_hl(0, "CmpItemKindText", {fg = singularity.base01, bg = singularity.base09})
-vim.api.nvim_set_hl(0, "CmpItemKindEnum", {fg = singularity.base01, bg = singularity.base09})
-vim.api.nvim_set_hl(0, "CmpItemKindKeyword", {fg = singularity.base01, bg = singularity.base09})
-vim.api.nvim_set_hl(0, "CmpItemKindConstant", {fg = singularity.base01, bg = singularity.base10})
-vim.api.nvim_set_hl(0, "CmpItemKindConstructor", {fg = singularity.base01, bg = singularity.base10})
-vim.api.nvim_set_hl(0, "CmpItemKindReference", {fg = singularity.base01, bg = singularity.base10})
-vim.api.nvim_set_hl(0, "CmpItemKindFunction", {fg = singularity.base01, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "CmpItemKindStruct", {fg = singularity.base01, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "CmpItemKindClass", {fg = singularity.base01, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "CmpItemKindModule", {fg = singularity.base01, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "CmpItemKindOperator", {fg = singularity.base01, bg = singularity.base11})
-vim.api.nvim_set_hl(0, "CmpItemKindField", {fg = singularity.base01, bg = singularity.base12})
-vim.api.nvim_set_hl(0, "CmpItemKindProperty", {fg = singularity.base01, bg = singularity.base12})
-vim.api.nvim_set_hl(0, "CmpItemKindEvent", {fg = singularity.base01, bg = singularity.base12})
-vim.api.nvim_set_hl(0, "CmpItemKindUnit", {fg = singularity.base01, bg = singularity.base13})
-vim.api.nvim_set_hl(0, "CmpItemKindSnippet", {fg = singularity.base01, bg = singularity.base13})
-vim.api.nvim_set_hl(0, "CmpItemKindFolder", {fg = singularity.base01, bg = singularity.base13})
-vim.api.nvim_set_hl(0, "CmpItemKindVariable", {fg = singularity.base01, bg = singularity.base14})
-vim.api.nvim_set_hl(0, "CmpItemKindFile", {fg = singularity.base01, bg = singularity.base14})
-vim.api.nvim_set_hl(0, "CmpItemKindMethod", {fg = singularity.base01, bg = singularity.base15})
-vim.api.nvim_set_hl(0, "CmpItemKindValue", {fg = singularity.base01, bg = singularity.base15})
-vim.api.nvim_set_hl(0, "CmpItemKindEnumMember", {fg = singularity.base01, bg = singularity.base15})
-vim.api.nvim_set_hl(0, "NvimTreeImageFile", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeFolderIcon", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", {fg = singularity.base00, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "NvimTreeFolderName", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", {fg = singularity.base02, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeEmptyFolderName", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeOpenedFolderName", {fg = singularity.base15, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NvimTreeNormal", {fg = singularity.base04, bg = singularity.base00})
-vim.api.nvim_set_hl(0, "NeogitBranch", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NeogitRemote", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "NeogitHunkHeader", {fg = singularity.base04, bg = singularity.base02})
-vim.api.nvim_set_hl(0, "NeogitHunkHeaderHighlight", {fg = singularity.base04, bg = singularity.base03})
-vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", {link = "Comment"})
-vim.api.nvim_set_hl(0, "HydraRed", {fg = singularity.base12, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HydraBlue", {fg = singularity.base09, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HydraAmaranth", {fg = singularity.base10, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HydraTeal", {fg = singularity.base08, bg = singularity.none})
-vim.api.nvim_set_hl(0, "HydraHint", {fg = singularity.none, bg = singularity.blend})
-vim.api.nvim_set_hl(0, "alpha1", {fg = singularity.base03, bg = singularity.none})
-vim.api.nvim_set_hl(0, "alpha2", {fg = singularity.base04, bg = singularity.none})
-vim.api.nvim_set_hl(0, "alpha3", {fg = singularity.base03, bg = singularity.none})
-vim.api.nvim_set_hl(0, "CodeBlock", {fg = singularity.none, bg = singularity.base01})
-vim.api.nvim_set_hl(0, "BufferLineDiagnostic", {fg = singularity.base10, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "BufferLineDiagnosticVisible", {fg = singularity.base10, bg = singularity.none, bold = true})
-vim.api.nvim_set_hl(0, "htmlH1", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "mkdRule", {link = "markdownRule"})
-vim.api.nvim_set_hl(0, "mkdListItem", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "mkdListItemCheckbox", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "VimwikiHeader1", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeader2", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeader3", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeader4", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeader5", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeader6", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiHeaderChar", {link = "markdownH1"})
-vim.api.nvim_set_hl(0, "VimwikiList", {link = "markdownListMarker"})
-vim.api.nvim_set_hl(0, "VimwikiLink", {link = "markdownUrl"})
-vim.api.nvim_set_hl(0, "VimwikiCode", {link = "markdownCode"})
-vim.api.nvim_set_hl(0, "FlashLabel", {fg = singularity.base05, bg = singularity.base00, bold = true})
-
--- Light-mode fixups. A few groups in the shared body assume the foreground that
--- sits on an accent background is light (true in dark, where base06 = #ffffff).
--- Re-point them for the light palette so contrast holds. Dark is unaffected.
-if vim.o.background == "light" then
-  vim.api.nvim_set_hl(0, "IncSearch", { fg = singularity.base00, bg = singularity.base10 })
+function M.setup(opts)
+  M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
-return { singularity = singularity }
+local function build_palette(bg)
+  local base00 = "#161616"
+  local base06 = "#ffffff"
+  local base09 = "#78a9ff"
+
+  -- Dark palette. base10 / base12 are the ember accents.
+  local dark = {
+    base00 = base00,
+    base01 = blend_hex(base00, base06, 0.085),
+    base02 = blend_hex(base00, base06, 0.18),
+    base03 = blend_hex(base00, base06, 0.3),
+    base04 = blend_hex(base00, base06, 0.82),
+    base05 = blend_hex(base00, base06, 0.95),
+    base06 = base06,
+    base07 = "#08bdba",
+    base08 = "#3ddbd9",
+    base09 = base09,
+    base10 = "#dd5500", -- ember-bright
+    base11 = "#33b1ff",
+    base12 = "#ee6611", -- ember-hot
+    base13 = "#42be65",
+    base14 = "#be95ff",
+    base15 = "#82cfff",
+    blend = "#131313",
+    none = "NONE",
+  }
+
+  -- Light palette: a legible tonal counterpart (see README). Ember in the same
+  -- roles via deeper shades; cool blue/teal syntax; Material blue-grey ramp.
+  local light = {
+    base00 = base06,
+    base01 = "#eceff1",
+    base02 = "#cfd8dc",
+    base03 = "#78828a",
+    base04 = "#37474f",
+    base05 = "#546e7a",
+    base06 = "#263238",
+    base07 = "#0e7c7b",
+    base08 = "#0a8385",
+    base09 = "#1a66d6",
+    base10 = "#b34400", -- ember-deep
+    base11 = "#0f52c4",
+    base12 = "#c65300", -- ember
+    base13 = "#2a8049",
+    base14 = "#7b3fd4",
+    base15 = "#0e7693",
+    blend = "#f4f6f8",
+    none = "NONE",
+  }
+
+  return (bg == "dark") and dark or light
+end
+
+-- Active palette for a background (defaults to current). No side effects.
+function M.get_palette(bg)
+  return build_palette(bg or vim.o.background)
+end
+
+-- Apply the colorscheme. Invoked by colors/singularity.lua and on :colorscheme.
+function M.load()
+  if vim.g.colors_name then
+    vim.cmd.hi("clear")
+  end
+  vim.g.colors_name = "singularity"
+  vim.o.termguicolors = true
+
+  local cfg = M.config
+  local c = build_palette(vim.o.background)
+  M.colors = c
+
+  -- Highlight setter that honours the `italics` option.
+  local function hl(group, spec)
+    if spec.italic and not cfg.italics then
+      spec.italic = nil
+    end
+    vim.api.nvim_set_hl(0, group, spec)
+  end
+
+  vim.g["terminal_color_0"] = c.base01
+  vim.g["terminal_color_1"] = c.base11
+  vim.g["terminal_color_2"] = c.base14
+  vim.g["terminal_color_3"] = c.base13
+  vim.g["terminal_color_4"] = c.base09
+  vim.g["terminal_color_5"] = c.base15
+  vim.g["terminal_color_6"] = c.base08
+  vim.g["terminal_color_7"] = c.base05
+  vim.g["terminal_color_8"] = c.base03
+  vim.g["terminal_color_9"] = c.base11
+  vim.g["terminal_color_10"] = c.base14
+  vim.g["terminal_color_11"] = c.base13
+  vim.g["terminal_color_12"] = c.base09
+  vim.g["terminal_color_13"] = c.base15
+  vim.g["terminal_color_14"] = c.base07
+  vim.g["terminal_color_15"] = c.base06
+  hl("ColorColumn", {fg = c.none, bg = c.base01})
+  hl("Cursor", {fg = c.base00, bg = c.base04})
+  hl("CursorLine", {fg = c.none, bg = c.base01})
+  hl("CursorColumn", {fg = c.none, bg = c.base01})
+  hl("CursorLineNr", {fg = c.base04, bg = c.none})
+  hl("QuickFixLine", {fg = c.none, bg = c.base01})
+  hl("Error", {fg = c.base10, bg = c.base01})
+  hl("LineNr", {fg = c.base03, bg = c.base00})
+  hl("NonText", {fg = c.base02, bg = c.none})
+  hl("Normal", {fg = c.base04, bg = c.base00})
+  hl("Pmenu", {fg = c.base04, bg = c.base01})
+  hl("PmenuSbar", {fg = c.base04, bg = c.base01})
+  hl("PmenuSel", {fg = c.base08, bg = c.base02})
+  hl("PmenuThumb", {fg = c.base08, bg = c.base02})
+  hl("SpecialKey", {fg = c.base03, bg = c.none})
+  hl("Visual", {fg = c.none, bg = c.base02})
+  hl("VisualNOS", {fg = c.none, bg = c.base02})
+  hl("TooLong", {fg = c.none, bg = c.base02})
+  hl("Debug", {fg = c.base13, bg = c.none})
+  hl("Macro", {fg = c.base07, bg = c.none})
+  hl("MatchParen", {fg = c.none, bg = c.base02, underline = true})
+  hl("Bold", {fg = c.none, bg = c.none, bold = true})
+  hl("Italic", {fg = c.none, bg = c.none, italic = true})
+  hl("Underlined", {fg = c.none, bg = c.none, underline = true})
+  hl("DiagnosticWarn", {fg = c.base14, bg = c.none})
+  hl("DiagnosticError", {fg = c.base10, bg = c.none})
+  hl("DiagnosticInfo", {fg = c.base09, bg = c.none})
+  hl("DiagnosticHint", {fg = c.base04, bg = c.none})
+  hl("DiagnosticUnderlineWarn", {fg = c.base14, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineError", {fg = c.base10, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineInfo", {fg = c.base04, bg = c.none, undercurl = true})
+  hl("DiagnosticUnderlineHint", {fg = c.base04, bg = c.none, undercurl = true})
+  hl("HealthError", {fg = c.base10, bg = c.none})
+  hl("HealthWarning", {fg = c.base14, bg = c.none})
+  hl("HealthSuccess", {fg = c.base13, bg = c.none})
+  hl("@comment", {link = "Comment"})
+  hl("@text.literal.commodity", {fg = c.base13, bg = c.none})
+  hl("@number", {fg = c.base09, bg = c.none})
+  hl("@number.date", {fg = c.base08, bg = c.none})
+  hl("@number.date.effective", {fg = c.base13, bg = c.none})
+  hl("@number.interval", {fg = c.base09, bg = c.none})
+  hl("@number.status", {fg = c.base12, bg = c.none})
+  hl("@number.quantity", {fg = c.base11, bg = c.none})
+  hl("@number.quantity.negative", {fg = c.base10, bg = c.none})
+  hl("LspCodeLens", {fg = c.none, bg = c.base03})
+  hl("LspReferenceText", {fg = c.none, bg = c.base03})
+  hl("LspReferenceRead", {fg = c.none, bg = c.base03})
+  hl("LspReferenceWrite", {fg = c.none, bg = c.base03})
+  hl("LspSignatureActiveParameter", {fg = c.base08, bg = c.none})
+  hl("@lsp.type.class", {link = "Structure"})
+  hl("@lsp.type.decorator", {link = "Decorator"})
+  hl("@lsp.type.decorator.markdown", {link = "Structure"})
+  hl("@lsp.type.function", {link = "@function"})
+  hl("@lsp.type.macro", {link = "Macro"})
+  hl("@lsp.type.method", {link = "@function"})
+  hl("@lsp.type.struct", {link = "Structure"})
+  hl("@lsp.type.type", {link = "Type"})
+  hl("@lsp.type.typeParameter", {link = "Typedef"})
+  hl("@lsp.type.selfParameter", {link = "@variable.builtin"})
+  hl("@lsp.type.builtinConstant", {link = "@constant.builtin"})
+  hl("@lsp.type.magicFunction", {link = "@function.builtin"})
+  hl("@lsp.type.boolean", {link = "@boolean"})
+  hl("@lsp.type.builtinType", {link = "@type.builtin"})
+  hl("@lsp.type.comment", {link = "@comment"})
+  hl("@lsp.type.enum", {link = "@type"})
+  hl("@lsp.type.enumMember", {link = "@constant"})
+  hl("@lsp.type.escapeSequence", {link = "@string.escape"})
+  hl("@lsp.type.formatSpecifier", {link = "@punctuation.special"})
+  hl("@lsp.type.keyword", {link = "@keyword"})
+  hl("@lsp.type.namespace", {link = "@namespace"})
+  hl("@lsp.type.number", {link = "@number"})
+  hl("@lsp.type.operator", {link = "@operator"})
+  hl("@lsp.type.parameter", {link = "@parameter"})
+  hl("@lsp.type.property", {link = "@property"})
+  hl("@lsp.type.selfKeyword", {link = "@variable.builtin"})
+  hl("@lsp.type.string.rust", {link = "@string"})
+  hl("@lsp.type.typeAlias", {link = "@type.definition"})
+  hl("@lsp.type.unresolvedReference", {link = "Error"})
+  hl("@lsp.type.variable", {link = "@variable"})
+  hl("@lsp.mod.readonly", {link = "@constant"})
+  hl("@lsp.mod.typeHint", {link = "Type"})
+  hl("@lsp.mod.builtin", {link = "Special"})
+  hl("@lsp.typemod.class.defaultLibrary", {link = "@type.builtin"})
+  hl("@lsp.typemod.enum.defaultLibrary", {link = "@type.builtin"})
+  hl("@lsp.typemod.enumMember.defaultLibrary", {link = "@constant.builtin"})
+  hl("@lsp.typemod.function.defaultLibrary", {link = "@function.builtin"})
+  hl("@lsp.typemod.keyword.async", {link = "@keyword.coroutine"})
+  hl("@lsp.typemod.macro.defaultLibrary", {link = "@function.builtin"})
+  hl("@lsp.typemod.method.defaultLibrary", {link = "@function.builtin"})
+  hl("@lsp.typemod.operator.injected", {link = "@operator"})
+  hl("@lsp.typemod.string.injected", {link = "@string"})
+  hl("@lsp.typemod.operator.controlFlow", {link = "@exception"})
+  hl("@lsp.typemod.keyword.documentation", {link = "Special"})
+  hl("@lsp.typemod.variable.global", {link = "@constant"})
+  hl("@lsp.typemod.variable.static", {link = "@constant"})
+  hl("@lsp.typemod.variable.defaultLibrary", {link = "Special"})
+  hl("@lsp.typemod.function.builtin", {link = "@function.builtin"})
+  hl("@lsp.typemod.function.readonly", {link = "@method"})
+  hl("@lsp.typemod.variable.defaultLibrary", {link = "@variable.builtin"})
+  hl("@lsp.typemod.variable.injected", {link = "@variable"})
+  hl("Folded", {fg = c.base02, bg = c.base01})
+  hl("FoldColumn", {fg = c.base01, bg = c.base00})
+  hl("SignColumn", {fg = c.base01, bg = c.base00})
+  hl("Directory", {fg = c.base08, bg = c.none})
+  hl("EndOfBuffer", {fg = c.base01, bg = c.none})
+  hl("ErrorMsg", {fg = c.base10, bg = c.none})
+  hl("ModeMsg", {fg = c.base04, bg = c.none})
+  hl("MoreMsg", {fg = c.base08, bg = c.none})
+  hl("Question", {fg = c.base04, bg = c.none})
+  hl("Substitute", {fg = c.base01, bg = c.base08})
+  hl("WarningMsg", {fg = c.base14, bg = c.none})
+  hl("WildMenu", {fg = c.base08, bg = c.base01})
+  hl("helpHyperTextJump", {fg = c.base08, bg = c.none})
+  hl("helpSpecial", {fg = c.base09, bg = c.none})
+  hl("helpHeadline", {fg = c.base10, bg = c.none})
+  hl("helpHeader", {fg = c.base15, bg = c.none})
+  hl("DiffAdded", {fg = c.base07, bg = c.none})
+  hl("DiffChanged", {fg = c.base09, bg = c.none})
+  hl("DiffRemoved", {fg = c.base10, bg = c.none})
+  hl("DiffAdd", {bg = "#122f2f", fg = c.none})
+  hl("DiffChange", {bg = "#222a39", fg = c.none})
+  hl("DiffText", {bg = "#2f3f5c", fg = c.none})
+  hl("DiffDelete", {bg = "#361c28", fg = c.none})
+  hl("IncSearch", {fg = c.base06, bg = c.base10})
+  hl("Search", {fg = c.base01, bg = c.base08})
+  hl("TabLine", {link = "StatusLineNC"})
+  hl("TabLineFill", {link = "TabLine"})
+  hl("TabLineSel", {link = "StatusLine"})
+  hl("Title", {fg = c.base04, bg = c.none})
+  hl("VertSplit", {fg = c.base01, bg = c.base00})
+  hl("WinSeparator", {fg = c.base01, bg = c.base00})
+  hl("Boolean", {fg = c.base09, bg = c.none})
+  hl("Character", {fg = c.base14, bg = c.none})
+  hl("Comment", {fg = c.base03, bg = c.none, italic = true})
+  hl("Conceal", {fg = c.none, bg = c.none})
+  hl("Conditional", {fg = c.base09, bg = c.none})
+  hl("Constant", {fg = c.base04, bg = c.none})
+  hl("Decorator", {fg = c.base12, bg = c.none})
+  hl("Define", {fg = c.base09, bg = c.none})
+  hl("Delimeter", {fg = c.base06, bg = c.none})
+  hl("Exception", {fg = c.base09, bg = c.none})
+  hl("Float", {link = "Number"})
+  hl("Function", {fg = c.base08, bg = c.none})
+  hl("Identifier", {fg = c.base04, bg = c.none})
+  hl("Include", {fg = c.base09, bg = c.none})
+  hl("Keyword", {fg = c.base09, bg = c.none})
+  hl("Label", {fg = c.base09, bg = c.none})
+  hl("Number", {fg = c.base15, bg = c.none})
+  hl("Operator", {fg = c.base09, bg = c.none})
+  hl("PreProc", {fg = c.base09, bg = c.none})
+  hl("Repeat", {fg = c.base09, bg = c.none})
+  hl("Special", {fg = c.base04, bg = c.none})
+  hl("SpecialChar", {fg = c.base04, bg = c.none})
+  hl("SpecialComment", {fg = c.base08, bg = c.none})
+  hl("Statement", {fg = c.base09, bg = c.none})
+  hl("StorageClass", {fg = c.base09, bg = c.none})
+  hl("String", {fg = c.base14, bg = c.none})
+  hl("Structure", {fg = c.base09, bg = c.none})
+  hl("Tag", {fg = c.base04, bg = c.none})
+  hl("Todo", {fg = c.base13, bg = c.none})
+  hl("Type", {fg = c.base09, bg = c.none})
+  hl("Typedef", {fg = c.base09, bg = c.none})
+  hl("markdownBlockquote", {fg = c.base08, bg = c.none})
+  hl("markdownBold", {link = "Bold"})
+  hl("markdownItalic", {link = "Italic"})
+  hl("markdownBoldItalic", {fg = c.none, bg = c.none, bold = true, italic = true})
+  hl("markdownRule", {link = "Comment"})
+  hl("markdownH1", {fg = c.base10, bg = c.none})
+  hl("markdownH2", {link = "markdownH1"})
+  hl("markdownH3", {link = "markdownH1"})
+  hl("markdownH4", {link = "markdownH1"})
+  hl("markdownH5", {link = "markdownH1"})
+  hl("markdownH6", {link = "markdownH1"})
+  hl("markdownHeadingDelimiter", {link = "markdownH1"})
+  hl("markdownHeadingRule", {link = "markdownH1"})
+  hl("markdownUrl", {fg = c.base14, bg = c.none, underline = true})
+  hl("markdownCode", {link = "String"})
+  hl("markdownCodeBlock", {link = "markdownCode"})
+  hl("markdownCodeDelimiter", {link = "markdownCode"})
+  hl("markdownUrl", {link = "String"})
+  hl("markdownListMarker", {fg = c.base08, bg = c.none})
+  hl("markdownOrderedListMarker", {fg = c.base08, bg = c.none})
+  hl("@markup", {link = "@none"})
+  hl("@markup.environment", {link = "Macro"})
+  hl("@markup.environment.name", {link = "Type"})
+  hl("@markup.emphasis", {italic = true})
+  hl("@markup.italic", {italic = true})
+  hl("@markup.strikethrough", {strikethrough = true})
+  hl("@markup.strong", {bold = true})
+  hl("@markup.underline", {underline = true})
+  hl("@markup.heading", {link = "Title"})
+  hl("@markup.heading.marker", {link = "markdownHeadingDelimiter"})
+  hl("@markup.heading.1.markdown", {link = "markdownH1"})
+  hl("@markup.heading.2.markdown", {link = "markdownH1"})
+  hl("@markup.heading.3.markdown", {link = "markdownH1"})
+  hl("@markup.heading.4.markdown", {link = "markdownH1"})
+  hl("@markup.heading.5.markdown", {link = "markdownH1"})
+  hl("@markup.heading.6.markdown", {link = "markdownH1"})
+  hl("@markup.heading.7.markdown", {link = "markdownH1"})
+  hl("@markup.heading.8.markdown", {link = "markdownH1"})
+  hl("@markup.link", {link = "markdownUrl"})
+  hl("@markup.link.label", {underline = true})
+  hl("@markup.link.label.symbol", {link = "markdownItalic"})
+  hl("@markup.link.label.markdown_inline", {link = "markdownItalic"})
+  hl("@markup.link.title", {link = "Title"})
+  hl("@markup.link.url", {link = "markdownUrl"})
+  hl("@markup.link.destination", {link = "markdownUrl"})
+  hl("@markup.link.description", {fg = c.blend, underline = true, italic = true})
+  hl("@markup.list", {link = "markdownListMarker"})
+  hl("@markup.list.bullet", {link = "markdownListMarker"})
+  hl("@markup.list.checked", {link = "markdownListMarker"})
+  hl("@markup.list.markdown", {link = "markdownListMarker"})
+  hl("@markup.list.ordered", {link = "markdownOrderedListMarker"})
+  hl("@markup.list.unchecked", {link = "markdownListMarker"})
+  hl("@markup.math", {link = "Special"})
+  hl("@markup.raw", {link = "String"})
+  hl("@markup.raw.markdown_inline", {link = "String"})
+  hl("@markup.quote", {link = "markdownBlockquote"})
+  hl("@markup.literal", {link = "markdownCode"})
+  hl("@markup.code.block", {link = "markdownCodeBlock"})
+  hl("@markup.rule", {link = "Comment"})
+  hl("asciidocAttributeEntry", {fg = c.base15, bg = c.none})
+  hl("asciidocAttributeList", {link = "asciidocAttributeEntry"})
+  hl("asciidocAttributeRef", {link = "asciidocAttributeEntry"})
+  hl("asciidocHLabel", {link = "markdownH1"})
+  hl("asciidocOneLineTitle", {link = "markdownH1"})
+  hl("asciidocQuotedMonospaced", {link = "markdownBlockquote"})
+  hl("asciidocURL", {link = "markdownUrl"})
+  hl("@comment", {link = "Comment"})
+  hl("@error", {fg = c.base11, bg = c.none})
+  hl("@operator", {link = "Operator"})
+  hl("@punctuation.delimiter", {fg = c.base08, bg = c.none})
+  hl("@punctuation.bracket", {fg = c.base08, bg = c.none})
+  hl("@punctuation.special", {fg = c.base08, bg = c.none})
+  hl("@string", {link = "String"})
+  hl("@string.regex", {fg = c.base07, bg = c.none})
+  hl("@string.escape", {fg = c.base15, bg = c.none})
+  hl("@character", {link = "Character"})
+  hl("@boolean", {link = "Boolean"})
+  hl("@number", {link = "Number"})
+  hl("@float", {link = "Float"})
+  hl("@function", {fg = c.base12, bg = c.none, bold = true})
+  hl("@function.builtin", {fg = c.base12, bg = c.none})
+  hl("@function.macro", {fg = c.base07, bg = c.none})
+  hl("@method", {fg = c.base07, bg = c.none})
+  hl("@constructor", {fg = c.base09, bg = c.none})
+  hl("@parameter", {fg = c.base04, bg = c.none})
+  hl("@keyword", {fg = c.base09, bg = c.none})
+  hl("@keyword.function", {fg = c.base08, bg = c.none})
+  hl("@keyword.operator", {fg = c.base08, bg = c.none})
+  hl("@conditional", {fg = c.base09, bg = c.none})
+  hl("@repeat", {fg = c.base09, bg = c.none})
+  hl("@label", {fg = c.base15, bg = c.none})
+  hl("@include", {fg = c.base09, bg = c.none})
+  hl("@exception", {fg = c.base15, bg = c.none})
+  hl("@type", {link = "Type"})
+  hl("@type.builtin", {link = "Type"})
+  hl("@attribute", {fg = c.base15, bg = c.none})
+  hl("@field", {fg = c.base04, bg = c.none})
+  hl("@property", {fg = c.base10, bg = c.none})
+  hl("@variable", {fg = c.base04, bg = c.none})
+  hl("@variable.builtin", {fg = c.base04, bg = c.none})
+  hl("@constant", {fg = c.base14, bg = c.none})
+  hl("@constant.builtin", {fg = c.base07, bg = c.none})
+  hl("@constant.macro", {fg = c.base07, bg = c.none})
+  hl("@namespace", {fg = c.base07, bg = c.none})
+  hl("@symbol", {fg = c.base15, bg = c.none, bold = true})
+  hl("@text", {fg = c.base04, bg = c.none})
+  hl("@text.strong", {fg = c.none, bg = c.none})
+  hl("@text.emphasis", {fg = c.base10, bg = c.none, bold = true})
+  hl("@text.underline", {fg = c.base10, bg = c.none, underline = true})
+  hl("@text.strike", {fg = c.base10, bg = c.none, strikethrough = true})
+  hl("@text.title", {fg = c.base10, bg = c.none})
+  hl("@text.literal", {fg = c.base04, bg = c.none})
+  hl("@text.uri", {fg = c.base14, bg = c.none, underline = true})
+  hl("@tag", {fg = c.base09, bg = c.none})
+  hl("@tag.attribute", {fg = c.base15, bg = c.none})
+  hl("@tag.delimiter", {fg = c.base15, bg = c.none})
+  hl("@tag.builtin.tsx", {link = "@tag.tsx"})
+  hl("@reference", {fg = c.base04, bg = c.none})
+  hl("NvimInternalError", {fg = c.base00, bg = c.base08})
+  hl("NormalFloat", {fg = c.base05, bg = c.blend})
+  hl("FloatBorder", {fg = c.blend, bg = c.blend})
+  hl("NormalNC", {fg = c.base04, bg = c.base00})
+  hl("TermCursor", {fg = c.base00, bg = c.base04})
+  hl("TermCursorNC", {fg = c.base00, bg = c.base04})
+  hl("StatusLine", {fg = c.base04, bg = c.base00})
+  hl("StatusLineNC", {fg = c.base04, bg = c.base01})
+  hl("StatusReplace", {fg = c.base00, bg = c.base08})
+  hl("StatusInsert", {fg = c.base00, bg = c.base12})
+  hl("StatusVisual", {fg = c.base00, bg = c.base14})
+  hl("StatusTerminal", {fg = c.base00, bg = c.base11})
+  hl("StatusNormal", {fg = c.base00, bg = c.base15})
+  hl("StatusCommand", {fg = c.base00, bg = c.base13})
+  hl("StatusLineDiagnosticWarn", {fg = c.base14, bg = c.base00, bold = true})
+  hl("StatusLineDiagnosticError", {fg = c.base10, bg = c.base00, bold = true})
+  hl("TelescopeBorder", {fg = c.blend, bg = c.blend})
+  hl("TelescopePromptBorder", {fg = c.base02, bg = c.base02})
+  hl("TelescopePromptNormal", {fg = c.base05, bg = c.base02})
+  hl("TelescopePromptPrefix", {fg = c.base08, bg = c.base02})
+  hl("TelescopeNormal", {fg = c.none, bg = c.blend})
+  hl("TelescopePreviewTitle", {fg = c.base02, bg = c.base12})
+  hl("TelescopePromptTitle", {fg = c.base02, bg = c.base11})
+  hl("TelescopeResultsTitle", {fg = c.blend, bg = c.blend})
+  hl("TelescopeSelection", {fg = c.none, bg = c.base02})
+  hl("TelescopePreviewLine", {fg = c.none, bg = c.base01})
+  hl("TelescopeMatching", {fg = c.base08, bg = c.none, bold = true, italic = true})
+  hl("NotifyERRORBorder", {fg = c.base08, bg = c.none})
+  hl("NotifyWARNBorder", {fg = c.base14, bg = c.none})
+  hl("NotifyINFOBorder", {fg = c.base05, bg = c.none})
+  hl("NotifyDEBUGBorder", {fg = c.base13, bg = c.none})
+  hl("NotifyTRACEBorder", {fg = c.base13, bg = c.none})
+  hl("NotifyERRORIcon", {fg = c.base08, bg = c.none})
+  hl("NotifyWARNIcon", {fg = c.base14, bg = c.none})
+  hl("NotifyINFOIcon", {fg = c.base05, bg = c.none})
+  hl("NotifyDEBUGIcon", {fg = c.base13, bg = c.none})
+  hl("NotifyTRACEIcon", {fg = c.base13, bg = c.none})
+  hl("NotifyERRORTitle", {fg = c.base08, bg = c.none})
+  hl("NotifyWARNTitle", {fg = c.base14, bg = c.none})
+  hl("NotifyINFOTitle", {fg = c.base05, bg = c.none})
+  hl("NotifyDEBUGTitle", {fg = c.base13, bg = c.none})
+  hl("NotifyTRACETitle", {fg = c.base13, bg = c.none})
+  hl("CmpItemAbbr", {fg = "#adadad", bg = c.none})
+  hl("CmpItemAbbrMatch", {fg = c.base05, bg = c.none, bold = true})
+  hl("CmpItemAbbrMatchFuzzy", {fg = c.base04, bg = c.none, bold = true})
+  hl("CmpItemMenu", {fg = c.base04, bg = c.none, italic = true})
+  hl("CmpItemKindInterface", {fg = c.base08})
+  hl("CmpItemKindColor", {fg = c.base08})
+  hl("CmpItemKindTypeParameter", {fg = c.base08})
+  hl("CmpItemKindText", {fg = c.base09})
+  hl("CmpItemKindEnum", {fg = c.base09})
+  hl("CmpItemKindKeyword", {fg = c.base09})
+  hl("CmpItemKindConstant", {fg = c.base10})
+  hl("CmpItemKindConstructor", {fg = c.base10})
+  hl("CmpItemKindReference", {fg = c.base10})
+  hl("CmpItemKindFunction", {fg = c.base11})
+  hl("CmpItemKindStruct", {fg = c.base11})
+  hl("CmpItemKindClass", {fg = c.base11})
+  hl("CmpItemKindModule", {fg = c.base11})
+  hl("CmpItemKindOperator", {fg = c.base11})
+  hl("CmpItemKindField", {fg = c.base12})
+  hl("CmpItemKindProperty", {fg = c.base12})
+  hl("CmpItemKindEvent", {fg = c.base12})
+  hl("CmpItemKindUnit", {fg = c.base13})
+  hl("CmpItemKindSnippet", {fg = c.base13})
+  hl("CmpItemKindFolder", {fg = c.base13})
+  hl("CmpItemKindVariable", {fg = c.base14})
+  hl("CmpItemKindFile", {fg = c.base14})
+  hl("CmpItemKindMethod", {fg = c.base15})
+  hl("CmpItemKindValue", {fg = c.base15})
+  hl("CmpItemKindEnumMember", {fg = c.base15})
+  hl("NvimTreeImageFile", {fg = c.base12, bg = c.none})
+  hl("NvimTreeFolderIcon", {fg = c.base12, bg = c.none})
+  hl("NvimTreeWinSeparator", {fg = c.base00, bg = c.base00})
+  hl("NvimTreeFolderName", {fg = c.base09, bg = c.none})
+  hl("NvimTreeIndentMarker", {fg = c.base02, bg = c.none})
+  hl("NvimTreeEmptyFolderName", {fg = c.base15, bg = c.none})
+  hl("NvimTreeOpenedFolderName", {fg = c.base15, bg = c.none})
+  hl("NvimTreeNormal", {fg = c.base04, bg = c.base00})
+  hl("NeogitBranch", {fg = c.base10, bg = c.none})
+  hl("NeogitRemote", {fg = c.base09, bg = c.none})
+  hl("NeogitHunkHeader", {fg = c.base04, bg = c.base02})
+  hl("NeogitHunkHeaderHighlight", {fg = c.base04, bg = c.base03})
+  hl("GitSignsCurrentLineBlame", {link = "Comment"})
+  hl("HydraRed", {fg = c.base12, bg = c.none})
+  hl("HydraBlue", {fg = c.base09, bg = c.none})
+  hl("HydraAmaranth", {fg = c.base10, bg = c.none})
+  hl("HydraTeal", {fg = c.base08, bg = c.none})
+  hl("HydraHint", {fg = c.none, bg = c.blend})
+  hl("alpha1", {fg = c.base03, bg = c.none})
+  hl("alpha2", {fg = c.base04, bg = c.none})
+  hl("alpha3", {fg = c.base03, bg = c.none})
+  hl("CodeBlock", {fg = c.none, bg = c.base01})
+  hl("BufferLineDiagnostic", {fg = c.base10, bg = c.none, bold = true})
+  hl("BufferLineDiagnosticVisible", {fg = c.base10, bg = c.none, bold = true})
+  hl("htmlH1", {link = "markdownH1"})
+  hl("mkdRule", {link = "markdownRule"})
+  hl("mkdListItem", {link = "markdownListMarker"})
+  hl("mkdListItemCheckbox", {link = "markdownListMarker"})
+  hl("VimwikiHeader1", {link = "markdownH1"})
+  hl("VimwikiHeader2", {link = "markdownH1"})
+  hl("VimwikiHeader3", {link = "markdownH1"})
+  hl("VimwikiHeader4", {link = "markdownH1"})
+  hl("VimwikiHeader5", {link = "markdownH1"})
+  hl("VimwikiHeader6", {link = "markdownH1"})
+  hl("VimwikiHeaderChar", {link = "markdownH1"})
+  hl("VimwikiList", {link = "markdownListMarker"})
+  hl("VimwikiLink", {link = "markdownUrl"})
+  hl("VimwikiCode", {link = "markdownCode"})
+  hl("FlashLabel", {fg = c.base05, bg = c.base00, bold = true})
+
+  -- ── Issue fixes ───────────────────────────────────────
+  hl("Folded", { fg = c.base04, bg = c.base01 })       -- #86 fg was base02 (too dark)
+  hl("@text.underline", { underline = true })          -- #101 underline, not ember text
+  hl("CurSearch", { link = "IncSearch" })              -- #91 current search match
+  hl("Added", { link = "DiffAdded" })                  -- #101 builtin diff base groups
+  hl("Changed", { link = "DiffChanged" })
+  hl("Removed", { link = "DiffRemoved" })
+  hl("@diff.plus", { link = "DiffAdded" })             -- #101 treesitter diff captures
+  hl("@diff.minus", { link = "DiffRemoved" })
+  hl("@diff.delta", { link = "DiffChanged" })
+
+  -- Per-level markdown headings (#80). Set colored_headings = false to disable.
+  if cfg.colored_headings then
+    local levels = { c.base10, c.base11, c.base08, c.base13, c.base14, c.base15 }
+    for i, colour in ipairs(levels) do
+      hl("markdownH" .. i, { fg = colour, bold = true })
+      hl("@markup.heading." .. i .. ".markdown", { link = "markdownH" .. i })
+    end
+  end
+
+  -- Light-mode fixups (#59 LSP references, IncSearch fg). Dark is unaffected.
+  if vim.o.background == "light" then
+    hl("IncSearch", { fg = c.base00, bg = c.base10 })
+    hl("LspReferenceText", { bg = c.base02 })
+    hl("LspReferenceRead", { bg = c.base02 })
+    hl("LspReferenceWrite", { bg = c.base02 })
+  end
+
+  -- Dim inactive windows (#37).
+  if cfg.dim_inactive then
+    local dim = (vim.o.background == "dark") and c.blend or c.base01
+    hl("NormalNC", { fg = c.base04, bg = dim })
+  end
+
+  -- Transparency (#103, #41): clear editor, gutter and float backgrounds.
+  if cfg.transparent then
+    local groups = {
+      "Normal", "NormalNC", "NormalFloat", "FloatBorder", "SignColumn", "FoldColumn",
+      "LineNr", "CursorLineNr", "EndOfBuffer", "WinSeparator", "VertSplit",
+      "NvimTreeNormal", "NvimTreeNormalNC", "NvimTreeWinSeparator",
+      "TelescopeNormal", "TelescopeBorder",
+    }
+    for _, g in ipairs(groups) do
+      local current = vim.api.nvim_get_hl(0, { name = g })
+      current.bg = nil
+      current.ctermbg = nil
+      vim.api.nvim_set_hl(0, g, current)
+    end
+  end
+
+  return c
+end
+
+return M

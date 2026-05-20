@@ -33,6 +33,8 @@ across the scale.
 - LSP, Treesitter and semantic-token highlighting.
 - Fast: plain `nvim_set_hl` calls, no runtime cost beyond the palette blend.
 - Uses `termguicolors`; the 16 terminal colours are set too.
+- Optional `setup()`: italics, transparency, dim-inactive windows, colourful headings.
+- Requiring the module has no side effects — it applies only via `:colorscheme`.
 
 ### Plugin support
 
@@ -69,12 +71,36 @@ vim.opt.background = "dark" -- or "light"
 vim.cmd.colorscheme("singularity")
 ```
 
-For a transparent background, clear the relevant groups after the colorscheme:
+## Configuration
+
+`setup()` is optional — the colorscheme works with no configuration. Call it
+before `:colorscheme` to override the defaults:
 
 ```lua
-for _, group in ipairs({ "Normal", "NormalNC", "NormalFloat" }) do
-  vim.api.nvim_set_hl(0, group, { bg = "none" })
-end
+require("singularity").setup({
+  italics = true,          -- italic comments and emphasis
+  transparent = false,     -- clear editor, gutter and float backgrounds
+  dim_inactive = false,    -- give inactive windows a dimmer background
+  colored_headings = true, -- per-level markdown heading colours
+})
+
+vim.opt.background = "dark"
+vim.cmd.colorscheme("singularity")
+```
+
+With lazy.nvim, pass `opts` and apply the scheme in `config`:
+
+```lua
+{
+  "binbandit/singularity.nvim",
+  lazy = false,
+  priority = 1000,
+  opts = { transparent = true },
+  config = function(_, opts)
+    require("singularity").setup(opts)
+    vim.cmd.colorscheme("singularity")
+  end,
+}
 ```
 
 ### lualine
@@ -91,6 +117,22 @@ All colours live in [`lua/singularity/init.lua`](lua/singularity/init.lua) as th
 `dark` and `light` tables. The HSLuv blending and other colour helpers
 (`blend_hex`, `lighten_hex`, `darken_hex`, `gradient`, …) are in
 [`lua/singularity/colorutils.lua`](lua/singularity/colorutils.lua).
+
+## Differences from oxocarbon
+
+singularity began as a pure-Lua port of oxocarbon, then diverged:
+
+- **Ember accent** instead of magenta, in both themes.
+- **Legible light theme** — a tonal counterpart with WCAG-AA contrast on white
+  (oxocarbon's light variant rendered comments near-black and several accents
+  below AA).
+- **No side effects on `require`** — applies only via `:colorscheme`/`load()`,
+  so lazy-loading and the lualine theme no longer trigger it.
+- **`setup()` configuration** — italics, transparency, dim-inactive, headings.
+- **Fixes** drawn from oxocarbon's issue tracker: readable folded text, per-level
+  markdown headings, cmp kind colours on the text rather than blocks, a defined
+  `CurSearch`, subtler light-mode LSP references, and the missing diff/diagnostic
+  groups (`Added`/`Changed`/`Removed`, `@diff.*`).
 
 ## Credits
 

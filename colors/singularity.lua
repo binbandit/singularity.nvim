@@ -1,5 +1,3 @@
 -- Colorscheme entry point: `:colorscheme singularity`.
--- Uncache the module so the palette is recomputed on every (re)apply.
-package.loaded["singularity"] = nil
-
-require("singularity")
+-- Applying lives in the module's load(); requiring the module has no side effects.
+require("singularity").load()
