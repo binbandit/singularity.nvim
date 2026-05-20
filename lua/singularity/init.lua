@@ -49,6 +49,7 @@ local function build_palette(bg)
     base13 = "#42be65",
     base14 = "#be95ff",
     base15 = "#82cfff",
+    yellow = "#d2a106", -- icons / hipatterns accent (base16 has no yellow slot)
     blend = "#131313",
     none = "NONE",
   }
@@ -72,6 +73,7 @@ local function build_palette(bg)
     base13 = "#2a8049",
     base14 = "#7b3fd4",
     base15 = "#0e7693",
+    yellow = "#8a6700", -- icons / hipatterns accent (legible amber on white)
     blend = "#f4f6f8",
     none = "NONE",
   }
@@ -530,6 +532,160 @@ function M.load()
       hl("@markup.heading." .. i .. ".markdown", { link = "markdownH" .. i })
     end
   end
+
+  -- ── mini.nvim — https://github.com/nvim-mini/mini.nvim ──────────────────
+  -- Group names validated against upstream mini.hues; links keep them in sync
+  -- with dark/light, transparency and config automatically.
+  -- mini.statusline
+  hl("MiniStatuslineModeNormal", { link = "StatusNormal" })
+  hl("MiniStatuslineModeInsert", { link = "StatusInsert" })
+  hl("MiniStatuslineModeVisual", { link = "StatusVisual" })
+  hl("MiniStatuslineModeReplace", { link = "StatusReplace" })
+  hl("MiniStatuslineModeCommand", { link = "StatusCommand" })
+  hl("MiniStatuslineModeOther", { link = "StatusTerminal" })
+  hl("MiniStatuslineDevinfo", { link = "StatusLine" })
+  hl("MiniStatuslineFileinfo", { link = "StatusLine" })
+  hl("MiniStatuslineFilename", { link = "StatusLineNC" })
+  hl("MiniStatuslineInactive", { link = "StatusLineNC" })
+  -- mini.tabline
+  hl("MiniTablineCurrent", { link = "TabLineSel" })
+  hl("MiniTablineVisible", { link = "TabLine" })
+  hl("MiniTablineHidden", { link = "TabLine" })
+  hl("MiniTablineModifiedCurrent", { link = "TabLineSel" })
+  hl("MiniTablineModifiedVisible", { link = "TabLine" })
+  hl("MiniTablineModifiedHidden", { link = "TabLine" })
+  hl("MiniTablineFill", { link = "TabLineFill" })
+  hl("MiniTablineTabpagesection", { link = "TabLineSel" })
+  hl("MiniTablineTrunc", { link = "TabLine" })
+  -- mini.pick
+  hl("MiniPickBorder", { link = "TelescopeBorder" })
+  hl("MiniPickBorderBusy", { link = "TelescopeBorder" })
+  hl("MiniPickBorderText", { link = "TelescopePromptTitle" })
+  hl("MiniPickCursor", { link = "Cursor" })
+  hl("MiniPickIconDirectory", { link = "Directory" })
+  hl("MiniPickIconFile", { link = "Normal" })
+  hl("MiniPickHeader", { link = "Title" })
+  hl("MiniPickMatchCurrent", { link = "TelescopeSelection" })
+  hl("MiniPickMatchMarked", { link = "Todo" })
+  hl("MiniPickMatchRanges", { link = "TelescopeMatching" })
+  hl("MiniPickNormal", { link = "TelescopeNormal" })
+  hl("MiniPickPreviewLine", { link = "TelescopePreviewLine" })
+  hl("MiniPickPreviewRegion", { link = "Visual" })
+  hl("MiniPickPrompt", { link = "TelescopePromptNormal" })
+  hl("MiniPickPromptCaret", { link = "TelescopePromptNormal" })
+  hl("MiniPickPromptPrefix", { link = "TelescopePromptPrefix" })
+  -- mini.files
+  hl("MiniFilesNormal", { link = "NormalFloat" })
+  hl("MiniFilesBorder", { link = "FloatBorder" })
+  hl("MiniFilesBorderModified", { link = "DiagnosticWarn" })
+  hl("MiniFilesCursorLine", { link = "CursorLine" })
+  hl("MiniFilesDirectory", { link = "Directory" })
+  hl("MiniFilesFile", { link = "Normal" })
+  hl("MiniFilesTitle", { link = "Title" })
+  hl("MiniFilesTitleFocused", { fg = c.base10, bold = true })
+  -- mini.icons (base16 has no yellow; uses c.yellow)
+  hl("MiniIconsAzure", { fg = c.base11 })
+  hl("MiniIconsBlue", { fg = c.base09 })
+  hl("MiniIconsCyan", { fg = c.base07 })
+  hl("MiniIconsGreen", { fg = c.base13 })
+  hl("MiniIconsGrey", { fg = c.base05 })
+  hl("MiniIconsOrange", { fg = c.base12 })
+  hl("MiniIconsPurple", { fg = c.base14 })
+  hl("MiniIconsRed", { fg = c.base10 })
+  hl("MiniIconsYellow", { fg = c.yellow })
+  -- mini.diff
+  hl("MiniDiffSignAdd", { link = "DiffAdded" })
+  hl("MiniDiffSignChange", { link = "DiffChanged" })
+  hl("MiniDiffSignDelete", { link = "DiffRemoved" })
+  hl("MiniDiffOverAdd", { link = "DiffAdd" })
+  hl("MiniDiffOverChange", { link = "DiffChange" })
+  hl("MiniDiffOverChangeBuf", { link = "DiffText" })
+  hl("MiniDiffOverContext", { link = "Comment" })
+  hl("MiniDiffOverContextBuf", { link = "Comment" })
+  hl("MiniDiffOverDelete", { link = "DiffDelete" })
+  -- mini.deps
+  hl("MiniDepsChangeAdded", { link = "DiffAdded" })
+  hl("MiniDepsChangeRemoved", { link = "DiffRemoved" })
+  hl("MiniDepsHint", { link = "DiagnosticHint" })
+  hl("MiniDepsInfo", { link = "DiagnosticInfo" })
+  hl("MiniDepsMsgBreaking", { link = "DiagnosticWarn" })
+  hl("MiniDepsPlaceholder", { link = "Comment" })
+  hl("MiniDepsTitle", { link = "Title" })
+  hl("MiniDepsTitleError", { link = "Error" })
+  hl("MiniDepsTitleSame", { link = "Comment" })
+  hl("MiniDepsTitleUpdate", { link = "DiffAdded" })
+  -- mini.hipatterns
+  hl("MiniHipatternsFixme", { fg = c.base00, bg = c.base10, bold = true })
+  hl("MiniHipatternsHack", { fg = c.base00, bg = c.yellow, bold = true })
+  hl("MiniHipatternsTodo", { fg = c.base00, bg = c.base11, bold = true })
+  hl("MiniHipatternsNote", { fg = c.base00, bg = c.base13, bold = true })
+  -- mini.clue
+  hl("MiniClueBorder", { link = "FloatBorder" })
+  hl("MiniClueTitle", { link = "Title" })
+  hl("MiniClueDescGroup", { fg = c.base15 })
+  hl("MiniClueDescSingle", { link = "NormalFloat" })
+  hl("MiniClueNextKey", { fg = c.base08, bold = true })
+  hl("MiniClueNextKeyWithPostkeys", { fg = c.base12, bold = true })
+  hl("MiniClueSeparator", { link = "WinSeparator" })
+  -- mini.starter
+  hl("MiniStarterHeader", { fg = c.base10 })
+  hl("MiniStarterFooter", { link = "Comment" })
+  hl("MiniStarterInactive", { link = "Comment" })
+  hl("MiniStarterItem", { link = "Normal" })
+  hl("MiniStarterItemBullet", { fg = c.base08 })
+  hl("MiniStarterItemPrefix", { fg = c.base12 })
+  hl("MiniStarterSection", { fg = c.base11, bold = true })
+  hl("MiniStarterQuery", { fg = c.base13, bold = true })
+  hl("MiniStarterCurrent", { link = "CursorLine" })
+  -- mini.notify
+  hl("MiniNotifyNormal", { link = "NormalFloat" })
+  hl("MiniNotifyBorder", { link = "FloatBorder" })
+  hl("MiniNotifyTitle", { link = "Title" })
+  hl("MiniNotifyLspProgress", { link = "Comment" })
+  -- mini.jump / mini.jump2d
+  hl("MiniJump", { link = "IncSearch" })
+  hl("MiniJump2dSpot", { fg = c.base10, bold = true })
+  hl("MiniJump2dSpotUnique", { fg = c.base12, bold = true })
+  hl("MiniJump2dSpotAhead", { fg = c.base08 })
+  hl("MiniJump2dDim", { link = "Comment" })
+  -- mini.cursorword
+  hl("MiniCursorword", { underline = true })
+  hl("MiniCursorwordCurrent", { link = "MiniCursorword" })
+  -- mini.indentscope
+  hl("MiniIndentscopeSymbol", { fg = c.base03 })
+  hl("MiniIndentscopeSymbolOff", { link = "MiniIndentscopeSymbol" })
+  -- mini.map
+  hl("MiniMapNormal", { link = "NormalFloat" })
+  hl("MiniMapSymbolCount", { fg = c.base05 })
+  hl("MiniMapSymbolLine", { fg = c.base11 })
+  hl("MiniMapSymbolView", { fg = c.base03 })
+  -- mini.snippets
+  hl("MiniSnippetsCurrent", { sp = c.base08, underline = true })
+  hl("MiniSnippetsCurrentReplace", { sp = c.base10, underline = true })
+  hl("MiniSnippetsVisited", { sp = c.base13, underline = true })
+  hl("MiniSnippetsUnvisited", { sp = c.base03, underline = true })
+  hl("MiniSnippetsFinal", { sp = c.base14, underline = true })
+  -- mini.test
+  hl("MiniTestPass", { fg = c.base13 })
+  hl("MiniTestFail", { fg = c.base10 })
+  hl("MiniTestEmphasis", { bold = true })
+  -- mini.completion
+  hl("MiniCompletionActiveParameter", { link = "LspSignatureActiveParameter" })
+  hl("MiniCompletionDeprecated", { fg = c.base03, strikethrough = true })
+  hl("MiniCompletionInfoBorderOutdated", { link = "DiagnosticWarn" })
+  -- mini.operators / mini.surround / mini.trailspace / mini.animate
+  hl("MiniOperatorsExchangeFrom", { link = "Visual" })
+  hl("MiniSurround", { link = "IncSearch" })
+  hl("MiniTrailspace", { bg = c.base10 })
+  hl("MiniAnimateCursor", { link = "Cursor" })
+  hl("MiniAnimateNormalFloat", { link = "NormalFloat" })
+  -- mini.cmdline (peek window)
+  hl("MiniCmdlinePeekNormal", { link = "NormalFloat" })
+  hl("MiniCmdlinePeekBorder", { link = "FloatBorder" })
+  hl("MiniCmdlinePeekTitle", { link = "Title" })
+  hl("MiniCmdlinePeekLineNr", { link = "LineNr" })
+  hl("MiniCmdlinePeekSign", { link = "SignColumn" })
+  hl("MiniCmdlinePeekSep", { link = "WinSeparator" })
 
   -- Light-mode fixups (#59 LSP references, IncSearch fg). Dark is unaffected.
   if vim.o.background == "light" then

@@ -40,7 +40,8 @@ across the scale.
 
 Explicit highlights are shipped for: Diagnostics, LSP, nvim-treesitter,
 Telescope, nvim-notify, nvim-cmp, NvimTree, Neogit, Gitsigns, Hydra, Flash,
-bufferline, alpha, Vimwiki and markdown/asciidoc. A matching
+bufferline, alpha, Vimwiki, the full [mini.nvim](https://github.com/nvim-mini/mini.nvim)
+suite (24 modules) and markdown/asciidoc. A matching
 [lualine](https://github.com/nvim-lualine/lualine.nvim) theme is bundled. Most
 other plugins "just work".
 
@@ -133,6 +134,9 @@ singularity began as a pure-Lua port of oxocarbon, then diverged:
   markdown headings, cmp kind colours on the text rather than blocks, a defined
   `CurSearch`, subtler light-mode LSP references, and the missing diff/diagnostic
   groups (`Added`/`Changed`/`Removed`, `@diff.*`).
+- **Comprehensive mini.nvim support** — 24 modules / ~130 highlight groups,
+  validated against upstream `mini.hues`. The original repo has only a partial,
+  unmerged PR.
 
 ## Credits
 
