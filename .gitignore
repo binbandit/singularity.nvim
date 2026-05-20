@@ -1,0 +1,13 @@
+# Compiled Lua
+*.luac
+luac.out
+
+# Tags
+tags
+tags.lock
+tags.temp
+
+# Editor / OS
+.DS_Store
+*.swp
+*.swo
