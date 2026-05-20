@@ -3,8 +3,10 @@
 -- Pulls straight from the active singularity palette, so it tracks the
 -- background (dark/light) and the ember accents automatically.
 
--- get_palette() returns the active colours without applying the colorscheme.
-local singularity = require("singularity").get_palette()
+-- Prefer the palette of the currently-applied variant (set by load()), falling
+-- back to a side-effect-free computation if the scheme has not been applied yet.
+local mod = require("singularity")
+local singularity = mod.colors or mod.get_palette()
 
 local colors = {
   color0 = singularity.base02,

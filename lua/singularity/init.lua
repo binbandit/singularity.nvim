@@ -16,6 +16,7 @@ local M = {}
 
 -- Optional configuration. The colorscheme works fully without calling setup().
 M.config = {
+  variant = "auto",        -- "auto" follows &background; or "dark" | "light" | "paper"
   italics = true,          -- italic comments / emphasis (#40)
   transparent = false,     -- clear editor + gutter + float backgrounds (#103, #41)
   dim_inactive = false,    -- dimmer background for inactive (NormalNC) windows (#37)
@@ -26,7 +27,17 @@ function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
-local function build_palette(bg)
+-- Resolve which palette to use: an explicit override wins, else config.variant,
+-- else follow &background. "auto" maps to dark/light from &background.
+local function resolve_variant(override)
+  local v = override or M.config.variant or "auto"
+  if v == "auto" then
+    return (vim.o.background == "light") and "light" or "dark"
+  end
+  return v
+end
+
+local function build_palette(variant)
   local base00 = "#161616"
   local base06 = "#ffffff"
   local base09 = "#78a9ff"
@@ -78,25 +89,56 @@ local function build_palette(bg)
     none = "NONE",
   }
 
-  return (bg == "dark") and dark or light
+  -- Paper palette: a warm, low-glare light variant on aged-cream stock. Same
+  -- ember signature; sepia grey ramp; accents darkened to stay WCAG-AA on cream.
+  local paper = {
+    base00 = "#f4ecd8",
+    base01 = "#ebe2c9",
+    base02 = "#dcd1b4",
+    base03 = "#897e62",
+    base04 = "#433c2b",
+    base05 = "#655c45",
+    base06 = "#2a2516",
+    base07 = "#0c6f64",
+    base08 = "#0a6f69",
+    base09 = "#1f51a8",
+    base10 = "#a83e00", -- ember-deep
+    base11 = "#1a44a6",
+    base12 = "#ab4400", -- ember
+    base13 = "#3c6e1e",
+    base14 = "#6a3ab8",
+    base15 = "#0c6a80",
+    yellow = "#7a5c00",
+    blend = "#efe6d0",
+    none = "NONE",
+  }
+
+  if variant == "paper" then return paper end
+  if variant == "light" then return light end
+  return dark
 end
 
--- Active palette for a background (defaults to current). No side effects.
-function M.get_palette(bg)
-  return build_palette(bg or vim.o.background)
+-- Active palette for a variant (defaults to the configured/auto one). No side effects.
+function M.get_palette(variant)
+  return build_palette(resolve_variant(variant))
 end
 
--- Apply the colorscheme. Invoked by colors/singularity.lua and on :colorscheme.
-function M.load()
+-- Apply the colorscheme. Invoked by the colors/ entries and on :colorscheme.
+-- `override` forces a variant ("dark"/"light"/"paper"); nil uses config/auto.
+function M.load(override)
+  local variant = resolve_variant(override)
   if vim.g.colors_name then
     vim.cmd.hi("clear")
   end
   vim.g.colors_name = "singularity"
   vim.o.termguicolors = true
+  -- paper and light are light-background variants; keep &background in sync.
+  vim.o.background = (variant == "dark") and "dark" or "light"
 
   local cfg = M.config
-  local c = build_palette(vim.o.background)
+  local c = build_palette(variant)
   M.colors = c
+  M.variant = variant
 
   -- Highlight setter that honours the `italics` option.
   local function hl(group, spec)
@@ -1079,8 +1121,8 @@ function M.load()
   hl("DropBarMenuHoverSymbol", { fg = c.base08, bold = true })
   hl("DropBarIconUISeparator", { link = "Comment" })
 
-  -- Light-mode fixups (#59 LSP references, IncSearch fg). Dark is unaffected.
-  if vim.o.background == "light" then
+  -- Light/paper fixups (#59 LSP references, IncSearch fg). Dark is unaffected.
+  if variant ~= "dark" then
     hl("IncSearch", { fg = c.base00, bg = c.base10 })
     hl("LspReferenceText", { bg = c.base02 })
     hl("LspReferenceRead", { bg = c.base02 })
@@ -1089,7 +1131,7 @@ function M.load()
 
   -- Dim inactive windows (#37).
   if cfg.dim_inactive then
-    local dim = (vim.o.background == "dark") and c.blend or c.base01
+    local dim = (variant == "dark") and c.blend or c.base01
     hl("NormalNC", { fg = c.base04, bg = dim })
   end
 

@@ -1,7 +1,7 @@
 # singularity.nvim
 
-A dark and light Neovim colorscheme built around **ember** — a deep, burnt-orange
-accent. It's a pure-Lua descendant of
+A dark, light, and paper Neovim colorscheme built around **ember** — a deep,
+burnt-orange accent. It's a pure-Lua descendant of
 [oxocarbon.nvim](https://github.com/nyoom-engineering/oxocarbon.nvim) (itself
 inspired by [IBM Carbon](https://carbondesignsystem.com/guidelines/color/overview/)),
 restyled so the signature colour is ember rather than magenta.
@@ -21,6 +21,10 @@ and every accent is WCAG-AA legible on white. Because the bright embers fall
 below AA contrast on a light background, light mode uses deeper shades —
 `#b34400` (errors/headings) and `#c65300` (functions) — and a Material blue-grey
 ramp so comments recede instead of rendering near-black.
+
+The **paper** theme is a warm, low-glare third variant — ember on aged-cream
+stock (`#f4ecd8`) with a sepia grey ramp and accents darkened to stay AA-legible
+on cream.
 
 In the dark theme the grey ramp (`base01`–`base05`) is blended perceptually in
 HSLuv space between the background and foreground anchors, so contrast stays even
@@ -86,6 +90,18 @@ vim.opt.background = "dark" -- or "light"
 vim.cmd.colorscheme("singularity")
 ```
 
+### Variants
+
+Three variants ship: **dark**, **light** and **paper** (warm cream). Select one
+with a dedicated colorscheme name:
+
+```lua
+vim.cmd.colorscheme("singularity-dark")  -- or singularity-light / singularity-paper
+```
+
+Plain `:colorscheme singularity` follows the `variant` option (default `"auto"`,
+which tracks `background`). Selecting a variant sets `background` to match.
+
 ## Configuration
 
 `setup()` is optional — the colorscheme works with no configuration. Call it
@@ -93,6 +109,7 @@ before `:colorscheme` to override the defaults:
 
 ```lua
 require("singularity").setup({
+  variant = "auto",        -- "auto" (follow background) | "dark" | "light" | "paper"
   italics = true,          -- italic comments and emphasis
   transparent = false,     -- clear editor, gutter and float backgrounds
   dim_inactive = false,    -- give inactive windows a dimmer background
