@@ -38,12 +38,26 @@ across the scale.
 
 ### Plugin support
 
-Explicit highlights are shipped for: Diagnostics, LSP, nvim-treesitter,
-Telescope, nvim-notify, nvim-cmp, NvimTree, Neogit, Gitsigns, Hydra, Flash,
-bufferline, alpha, Vimwiki, the full [mini.nvim](https://github.com/nvim-mini/mini.nvim)
-suite (24 modules) and markdown/asciidoc. A matching
-[lualine](https://github.com/nvim-lualine/lualine.nvim) theme is bundled. Most
-other plugins "just work".
+Explicit highlights are shipped for the core (Diagnostics, LSP semantic tokens,
+nvim-treesitter) plus a wide range of plugins:
+
+- **Completion**: nvim-cmp, blink.cmp
+- **Pickers**: Telescope, fzf-lua
+- **File explorers**: neo-tree, oil.nvim, NvimTree
+- **Git**: Gitsigns, Neogit, diffview.nvim
+- **UI / menus**: noice.nvim, which-key, lazy.nvim, mason.nvim, nvim-notify,
+  fidget.nvim, bufferline, alpha, dropbar
+- **Editing / motion**: indent-blankline, rainbow-delimiters, treesitter-context,
+  vim-illuminate, leap.nvim, Flash, Hydra
+- **LSP UI**: trouble.nvim, nvim-navic, lspsaga
+- **Debug**: nvim-dap, nvim-dap-ui
+- **Markup**: render-markdown, Vimwiki, markdown/asciidoc
+- **The full [mini.nvim](https://github.com/nvim-mini/mini.nvim) suite** (24 modules)
+
+A matching [lualine](https://github.com/nvim-lualine/lualine.nvim) theme is
+bundled. Everything links to the theme's semantic groups, so plugins that key
+off standard highlights (todo-comments, gitsigns, etc.) and most others "just
+work".
 
 ## Install
 
@@ -137,6 +151,10 @@ singularity began as a pure-Lua port of oxocarbon, then diverged:
 - **Comprehensive mini.nvim support** — 24 modules / ~130 highlight groups,
   validated against upstream `mini.hues`. The original repo has only a partial,
   unmerged PR.
+- **~20 more popular plugins themed** — noice, which-key, neo-tree, blink.cmp,
+  trouble, lazy, mason, diffview, fzf-lua, nvim-dap(-ui), render-markdown, navic,
+  oil, leap, rainbow-delimiters and more (~440 groups), with names validated
+  against current upstream sources.
 
 ## Credits
 
